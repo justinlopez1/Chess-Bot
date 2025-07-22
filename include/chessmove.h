@@ -4,29 +4,28 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "chesspiece.h"
+
+// struct represents a chess move
 typedef struct {
     uint8_t from;
     uint8_t to;
-    uint8_t flags; // this represents a ton of things shown below
+    uint8_t type; // this represents a ton of things shown below
 } chessmove;
 
 enum {
-    CHESSMOVE_FLAGS_NO_PROMOTION_MASK = (1 << 0), // if no promotion is needed
-    CHESSMOVE_FLAGS_Q_PROMOTION_MASK = (1 << 1), // if a promotion need and one is selected
-    CHESSMOVE_FLAGS_R_PROMOTION_MASK = (1 << 1),
-    CHESSMOVE_FLAGS_B_PROMOTION_MASK = (1 << 1),
-    CHESSMOVE_FLAGS_N_PROMOTION_MASK = (1 << 1),
-    CHESSMOVE_FLAGS_CASTLE_MASK = (1 << 1), // if move is a castle
-    CHESSMOVE_FLAGS_DOUBLEPAWN_MASK = (1 << 1), // if move is a double forward pawn move
-    CHESSMOVE_FLAGS_ENPESSANT_MASK = (1 << 1), // if move is an en pessant move
+    CHESSMOVE_TYPE_NORMAL = 0,
+    CHESSMOVE_TYPE_Q_PROMOTION,
+    CHESSMOVE_TYPE_R_PROMOTION,
+    CHESSMOVE_TYPE_B_PROMOTION,
+    CHESSMOVE_TYPE_N_PROMOTION,
+    CHESSMOVE_TYPE_CASTLE,
+    CHESSMOVE_TYPE_DOUBLEPAWN,
+    CHESSMOVE_TYPE_ENPESSANT
 };
 
-bool chessmove_is_castle(chessmove move);
-
-bool chessmove_is_doublepawn(chessmove move);
-
-bool chessmove_is_enpessane(chessmove move);
-
-// add promotion getters
+static inline chesspiece chessmove_get_promotion(chessmove move) {
+    
+}
 
 #endif /* CHESSMOVE_H */
