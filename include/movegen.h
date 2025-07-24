@@ -3,14 +3,14 @@
 
 #include <stdbool.h>
 
-#include "chessmove_list.h"
+#include "movelist.h"
 #include "chessmove.h"
 #include "chessboard.h"
 
 // adds all psuedo pawn moves to ml
-void add_psuedo_pawn_moves(chessboard* board, chessmove_list ml, bool white_to_move);
+void add_psuedo_pawn_moves(chessboard* board, movelist ml, bool white_to_move);
 
 // adds all legal pawn moves to ml
-void add_pawn_moves(chessboard* board, chessmove_list ml, bool white_to_move);
+void add_pawn_moves(chessboard* board, movelist ml, bool white_to_move);
 
-#endif MOVEGEN_H
+#endif /* MOVEGEN_H */
