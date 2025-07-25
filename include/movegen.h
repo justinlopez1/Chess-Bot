@@ -27,10 +27,10 @@ static const uint64_t FILE_F = 0x2020202020202020ULL;
 static const uint64_t FILE_G = 0x4040404040404040ULL;
 static const uint64_t FILE_H = 0x8080808080808080ULL;
 
-// adds all psuedo pawn moves to ml
-void add_psuedo_pawn_moves(chessboard* board, movelist* ml, bool white_to_move);
-
 // adds all legal pawn moves to ml
 void add_pawn_moves(chessboard* board, movelist* ml, bool white_to_move);
+
+// adds all legal knight moves to ml
+void add_knight_moves(chessboard* board, movelist* ml, bool white_to_move);
 
 #endif /* MOVEGEN_H */

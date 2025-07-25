@@ -36,7 +36,7 @@ static inline uint8_t ctz(uint64_t num) {
     return __builtin_ctzll(num);
 }
 
-// adds moves to a movelist
+// adds moves to a movelist, can be used when all moves have the same delta
 // bitboard is bitboard filled with final destination pieces
 // delta is how pieces were shifted, so if pieces were pushed 
 // one rank forward it would be positive 8

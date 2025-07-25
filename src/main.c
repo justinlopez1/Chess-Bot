@@ -20,6 +20,23 @@ int main() {
         .black_pieces = (1ULL<<33)|(1ULL<<35)|(1ULL<<37)
     };
 
+    chessboard knight_board = {
+        // no kings, queens, bishops, rooks or pawns
+        .kings        = 0ULL,
+        .queens       = 0ULL,
+        .bishops      = 0ULL,
+        .rooks        = 0ULL,
+        .pawns        = 0ULL,
+
+        // one white knight on e4 (index 4 + 3*8 = 28)
+        .knights      = 1ULL << 28,
+
+        // white_pieces includes that knight, black_pieces is empty
+        .white_pieces = 0ULL,
+        .black_pieces = 1ULL << 28
+    };
+
+
     chessboard board = {
         // piece‐type bitboards (both colors)
         .kings        = (1ULL<<4)  | (1ULL<<60),
@@ -35,8 +52,11 @@ int main() {
 
     movelist ml;
     movelist_init(&ml);
-    add_pawn_moves(&pawn_board, &ml, true); 
+    // add_pawn_moves(&board, &ml, false); 
+    add_knight_moves(&knight_board, &ml, false);
     
+    chessboard_print(&knight_board);
+    movelist_print(&ml);
 
     return 0;
 }
