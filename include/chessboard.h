@@ -21,7 +21,7 @@ typedef struct {
 } chessboard;
 
 // prints a single bitboard to the terminal
-void bitboard_print(uint64_t* bitboard);
+void bitboard_print(uint64_t bitboard, char* c);
 
 // prints a single chessboard to the terminal
 // lowercase = white

@@ -1,7 +1,24 @@
 #include <stdio.h>
+#include <stdbool.h>
+
 #include "chessboard.h"
+#include "movegen.h"
 
 int main() {
+
+    chessboard pawn_board = {
+        // no other pieces
+        .kings        = 0ULL,
+        .queens       = 0ULL,
+        .bishops      = 0ULL,
+        .knights      = 0ULL,
+        .rooks        = 0ULL,
+        // pawns on c4, e4 (white) and b5, d5, f5 (black)
+        .pawns        = (1ULL<<26)|(1ULL<<28)   // white c4,e4
+                      | (1ULL<<33)|(1ULL<<35)|(1ULL<<37), // black b5,d5,f5
+        .white_pieces = (1ULL<<26)|(1ULL<<28),
+        .black_pieces = (1ULL<<33)|(1ULL<<35)|(1ULL<<37)
+    };
 
     chessboard board = {
         // piece‐type bitboards (both colors)
@@ -16,7 +33,10 @@ int main() {
         .black_pieces = 0xFFFF000000000000ULL
     };
 
-    chessboard_print(&board);
+    movelist ml;
+    movelist_init(&ml);
+    add_pawn_moves(&pawn_board, &ml, true); 
+    
 
     return 0;
 }

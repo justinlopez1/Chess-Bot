@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "chesspiece.h"
+#include "chessboard.h"
 
 // struct represents a chess move
 typedef struct {
@@ -24,8 +25,8 @@ enum {
     CHESSMOVE_TYPE_ENPESSANT
 };
 
-static inline chesspiece chessmove_get_promotion(chessmove move) {
-    
+static inline bool is_legal(chessboard* board, chessmove move) {
+   return true; 
 }
 
 #endif /* CHESSMOVE_H */
