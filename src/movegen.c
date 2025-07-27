@@ -149,4 +149,5 @@ void add_king_moves(chessboard* board, movelist* ml, bool white_to_move) {
     king_move = SHIFT_NW(kings) & ~same_color;
     if (king_move)
         add_moves(board, ml, king_move, SHIFT_NW_DELTA, CHESSMOVE_TYPE_NORMAL);
+        
 }
