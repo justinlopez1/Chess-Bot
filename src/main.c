@@ -29,11 +29,13 @@ int main() {
         .pawns        = 0ULL,
 
         // one white knight on e4 (index 4 + 3*8 = 28)
-        .knights      = 1ULL << 28,
+        // .knights      = 1ULL << 28,
+        .knights = 1ULL,
 
         // white_pieces includes that knight, black_pieces is empty
         .white_pieces = 0ULL,
-        .black_pieces = 1ULL << 28
+        // .black_pieces = 1ULL << 28
+        .black_pieces = 1ULL
     };
 
 
@@ -54,6 +56,7 @@ int main() {
     movelist_init(&ml);
     // add_pawn_moves(&board, &ml, false); 
     add_knight_moves(&knight_board, &ml, false);
+    
     
     chessboard_print(&knight_board);
     movelist_print(&ml);
