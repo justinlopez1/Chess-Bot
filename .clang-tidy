@@ -1,0 +1,17 @@
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  modernize-*,
+  readability-*,
+  performance-*,
+  portability-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,  # Allow manual pointer ops
+  -modernize-use-trailing-return-type,                # Don't enforce C++14+ trailing types
+  -modernize-pass-by-value                            # Avoid premature optimization
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: file
+ExtraArgs: ['-Iinclude']
