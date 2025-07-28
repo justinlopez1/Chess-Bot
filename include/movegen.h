@@ -9,12 +9,9 @@
 #include "macros.h"
 
 
-// adds all legal pawn moves to ml
-void add_pawn_moves(chessboard* board, movelist* ml, bool white_to_move);
-
-// adds all legal knight moves to ml
-void add_knight_moves(chessboard* board, movelist* ml, bool white_to_move);
-
-void add_king_moves(chessboard* board, movelist* ml, bool white_to_move);
+// adds all of a move type to the movelist object moves
+void add_pawn_moves(chessboard* board, movelist* moves, bool white_to_move);
+void add_knight_moves(chessboard* board, movelist* moves, bool white_to_move);
+void add_king_moves(chessboard* board, movelist* moves, bool white_to_move);
 
 #endif /* MOVEGEN_H */
