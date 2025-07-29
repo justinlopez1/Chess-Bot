@@ -37,12 +37,23 @@ static inline uint8_t ctz(uint64_t num) {
     return __builtin_ctzll(num);
 }
 
-// adds moves to a movelist, can be used when all moves have the same delta
-// bitboard is bitboard filled with final destination pieces
+// struct that holds the info needed to add a move to a movelist
 // delta is how pieces were shifted, so if pieces were pushed 
-// one rank forward it would be positive 8
+// delta is how pieces were shifted, so if pieces were pushed. One rank forware would be positiv 8
 // type is move type, ie CHESSMOVE_TYPE_NORMAL, CHESSMOVE_TYPE_ENPESSANT
-static inline void add_moves(chessboard* board, movelist* moves, uint64_t bitboard, int8_t delta, uint8_t type) {
+typedef struct {
+    uint64_t bitboard;
+    int8_t delta;
+    uint8_t move_type;
+} addmove_info;
+
+// adds moves to a movelist, can be used when all moves of the same type. Board parameter is needed to pass into
+// is_legal to check if board state is legal after move is attempted
+static inline void add_moves(chessboard* board, movelist* moves, addmove_info* info) {
+    uint64_t bitboard = info->bitboard;
+    int8_t delta = info->delta;
+    uint8_t type = info->move_type;
+
     // loop through bits that are 1's
     while (bitboard) {
         uint8_t idx = ctz(bitboard);

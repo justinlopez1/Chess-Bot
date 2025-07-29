@@ -9,49 +9,87 @@ void add_pawn_moves(chessboard* board, movelist* moves, bool white_to_move) {
     if (white_to_move) {
         uint64_t w_pawns = board->pawns & board->white_pieces;
         uint64_t all_pieces = board->white_pieces | board->black_pieces;
+        addmove_info move_info;
 
         // calculate single pushes
         uint64_t single_push = SHIFT_N(w_pawns) & ~all_pieces; 
-        if (single_push)
-            add_moves(board, moves, single_push, SHIFT_N_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (single_push) {
+            move_info.bitboard = single_push;
+            move_info.delta = SHIFT_N_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate double pushes
         // pawns that after the first push are on rank 3 meaning 
         // they were previously in their staarting position
         uint64_t double_push = single_push & RANK_3;
         double_push = SHIFT_N(double_push) & ~all_pieces;
-        if (double_push)
-            add_moves(board, moves, double_push, SHIFT_N_DELTA*2, CHESSMOVE_TYPE_DOUBLEPAWN);
+        if (double_push) {
+            move_info.bitboard = double_push;
+            move_info.delta = SHIFT_N_DELTA*2;
+            move_info.move_type = CHESSMOVE_TYPE_DOUBLEPAWN;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate left take
         uint64_t left_take = SHIFT_NW(w_pawns) & board->black_pieces;
-        add_moves(board, moves, left_take, SHIFT_NW_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (left_take) {
+            move_info.bitboard = left_take;
+            move_info.delta = SHIFT_NW_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate right take
         uint64_t right_take = SHIFT_NE(w_pawns) & board->black_pieces;
-        add_moves(board, moves, right_take, SHIFT_NE_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (right_take) {
+            move_info.bitboard = right_take;
+            move_info.delta = SHIFT_NE_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
     }
     else {
-        // mirror white
         uint64_t b_pawns = board->pawns & board->black_pieces;
         uint64_t all_pieces = board->white_pieces | board->black_pieces;
+        addmove_info move_info;
 
         // calculate single pushes
         uint64_t single_push = SHIFT_S(b_pawns) & ~all_pieces; 
-        add_moves(board, moves, single_push, SHIFT_S_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (single_push) {
+            move_info.bitboard = single_push;
+            move_info.delta = SHIFT_S_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate double pushes
-        uint64_t double_push = b_pawns & RANK_6;
+        uint64_t double_push = single_push & RANK_6;
         double_push = SHIFT_S(double_push) & ~all_pieces;
-        add_moves(board, moves, double_push, SHIFT_S_DELTA*2, CHESSMOVE_TYPE_DOUBLEPAWN);
+        if (double_push) {
+            move_info.bitboard = double_push;
+            move_info.delta = SHIFT_S_DELTA*2;
+            move_info.move_type = CHESSMOVE_TYPE_DOUBLEPAWN;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate left take
         uint64_t left_take = SHIFT_SW(b_pawns) & board->white_pieces;
-        add_moves(board, moves, left_take, SHIFT_SW_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (left_take) {
+            move_info.bitboard = left_take;
+            move_info.delta = SHIFT_SW_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
 
         // calculate right take
         uint64_t right_take = SHIFT_SE(b_pawns) & board->white_pieces;
-        add_moves(board, moves, right_take, SHIFT_SE_DELTA, CHESSMOVE_TYPE_NORMAL);
+        if (right_take) {
+            move_info.bitboard = right_take;
+            move_info.delta = SHIFT_SE_DELTA;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
     }
 }
 
