@@ -74,15 +74,24 @@ static inline void add_moves(chessboard* board, movelist* moves, const addmove_i
     }
 }
 
+enum { MOVE_STRING_LENGTH = 7 };
+
 static inline void movelist_print(const movelist* moves) {
     for (int i = 0; i < moves->curr_size; i++) {
-        char str[8];
-        memcpy(str, square_name[moves->moves[i].from], 2);
-        str[2] = '-';
-        str[3] = '>';
-        memcpy(str+4, square_name[moves->moves[i].to], 2);
-        str[6] = '\n';
-        str[7] = '\0';
+        char str[MOVE_STRING_LENGTH+1];
+        uint8_t idx = 0;
+
+        memcpy(str+idx, square_name[moves->moves[i].from], 2);
+        idx+=2;
+
+        str[idx++] = '-';
+        str[idx++] = '>';
+
+        memcpy(str+idx, square_name[moves->moves[i].to], 2);
+        idx+=2;
+
+        str[idx++] = '\n';
+        str[idx++] = '\0';
         printf("%s", str);
     }
 }

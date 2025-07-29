@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "movegen.h"
 #include "movelist.h"
@@ -108,17 +109,19 @@ void add_knight_moves(chessboard* board, movelist* moves, const bool white_to_mo
     }
 
     uint64_t knight_move = 0;
-    addmove_info move_info;
+    shift knight_shift;
 
-    for (uint8_t i = 0; i < TOTAL_KNIGHT_MOVES; i++) {
-        shift knight_shift = KNIGHT_MOVESET[i];
+    addmove_info move_info;
+    move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+
+    for (uint8_t i = 0; i < TOTAL_KNIGHT_SHIFTS; i++) {
+        knight_shift = KNIGHT_SHIFTSET[i];
         knight_shift.mask &= not_same_color;
 
         knight_move = shift_bitboard(knights, &knight_shift);
         if (knight_move) {
             move_info.bitboard = knight_move;
-            move_info.delta = (int8_t)KNIGHT_MOVESET[i].delta;
-            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.delta = KNIGHT_SHIFTSET[i].delta;
 
             add_moves(board, moves, &move_info);
         }
@@ -140,18 +143,93 @@ void add_king_moves(chessboard* board, movelist* moves, const bool white_to_move
 
     // now try to move the king in all 8 directions
     uint64_t king_move = 0;
-    addmove_info move_info;
+    shift king_shift;
 
-    for (uint8_t i = 0; i < TOTAL_KING_MOVES; i++) {
-        shift king_shift = KING_MOVESET[i];
+    addmove_info move_info;
+    move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+
+    for (uint8_t i = 0; i < TOTAL_KING_SHIFTS; i++) {
+        king_shift = KING_SHIFTSET[i];
         king_shift.mask &= not_same_color;
 
         king_move = shift_bitboard(kings, &king_shift);
         if (king_move) {
             move_info.bitboard = king_move;
-            move_info.delta = (int8_t)KING_MOVESET[i].delta;
-            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.delta = KING_SHIFTSET[i].delta;
             add_moves(board, moves, &move_info);
         }
     }
+}
+
+void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_move, slider_type slider, const shift* shiftset, uint8_t total_shifts) {
+    uint64_t pieces = 0;
+    switch (slider) {
+        case (SLIDER_BISHOP):
+            pieces = board->bishops;
+            break;
+        case (SLIDER_QUEEN):
+            pieces = board->queens;
+            break;
+        case (SLIDER_ROOK):
+            pieces = board->rooks;
+            break;
+        default:
+            exit(1);
+    }
+
+    uint64_t not_same_color = 0;
+    uint64_t not_other_color = 0;
+
+    if (white_to_move) {
+        pieces &= board->white_pieces;
+        not_same_color = ~board->white_pieces;
+        not_other_color = ~board->black_pieces;
+    }
+    else {
+        pieces &= board->black_pieces;
+        not_same_color = ~board->black_pieces;
+        not_other_color = ~board->white_pieces;
+    }
+
+    if (!pieces) {
+        return;
+    }
+
+    uint64_t current_pieces = 0;
+    shift piece_shift;
+    int8_t shift_count = 0;
+
+    addmove_info move_info;
+    move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+
+    for (uint8_t i = 0; i < total_shifts; i++) {
+        current_pieces = pieces;
+        piece_shift = shiftset[i];
+        piece_shift.mask &= not_same_color;
+        shift_count = 1;
+
+        // try first shift then add in while loop to use loop as if statement condition
+        current_pieces = shift_bitboard(current_pieces, &piece_shift);
+        while (current_pieces) {
+
+            // add current pieces moves
+            move_info.bitboard = current_pieces;
+            move_info.delta = (int8_t)(piece_shift.delta * (shift_count++));
+            add_moves(board, moves, &move_info);
+
+            current_pieces &= not_other_color;
+
+            current_pieces = shift_bitboard(current_pieces, &piece_shift);
+        }
+    }
+}
+
+void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
+    add_pawn_moves(board, moves, white_to_move);
+    add_knight_moves(board, moves, white_to_move);
+    add_king_moves(board, moves, white_to_move);
+
+    add_slider_moves(board, moves, white_to_move, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
+    // add rest 
+
 }

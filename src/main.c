@@ -51,14 +51,34 @@ int main() {
         .white_pieces = 0x000000000000FFFFULL,
         .black_pieces = 0xFFFF000000000000ULL
     };
+    
+    chessboard rook_board = {
+        // no kings, queens, bishops, rooks or pawns
+        .kings        = 0ULL,
+        .queens       = 0ULL,
+        .bishops      = 0ULL,
+        .rooks        = 1ULL << 32 | 1ULL << 36,
+        .pawns        = 0ULL,
+
+        // one white knight on e4 (index 4 + 3*8 = 28)
+        // .knights      = 1ULL << 28,
+        .knights = 0ULL,
+
+        // white_pieces includes that knight, black_pieces is empty
+        .white_pieces = 1ULL << 36,
+        // .black_pieces = 1ULL << 28
+        .black_pieces = 1ULL << 32
+    };
 
     movelist ml;
     movelist_init(&ml);
     // add_pawn_moves(&board, &ml, false); 
-    add_knight_moves(&knight_board, &ml, false);
+    // add_knight_moves(&knight_board, &ml, false);
+    // add_slider_moves(&rook_board, &ml, false, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
     
-    
-    chessboard_print(&knight_board);
+    add_legal_moves(&board, &ml, true);
+   
+    chessboard_print(&board);
     movelist_print(&ml);
 
     return 0;

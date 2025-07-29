@@ -11,50 +11,47 @@ enum {
     B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING
 };
 
+// represents slider types
+typedef uint8_t slider_type;
+enum {
+    SLIDER_ROOK,
+    SLIDER_BISHOP,
+    SLIDER_QUEEN
+};
+
 // converts chesspiece to a char that can be printed to the terminal
 // static inline cause its a quick switch case
-static inline char chesspiece_to_char(chesspiece piece) {
+static inline char chesspiece_to_char(const chesspiece piece) {
     switch (piece) {
         case PIECE_EMPTY:
             return '.';
-            break;
         case W_PAWN:
             return 'p';
-            break;
         case B_PAWN:
             return 'P';
-            break;
         case W_ROOK:
             return 'r';
-            break;
         case W_KNIGHT:
             return 'n';
-            break;
         case W_BISHOP:
             return 'b';
-            break;
         case B_ROOK:
             return 'R';
-            break;
         case B_KNIGHT:
             return 'N';
-            break;
         case B_BISHOP:
             return 'B';
-            break;
         // queen king at bottom cause lower likely hood
         case W_QUEEN:
             return 'q';
-            break;
         case W_KING:
             return 'k';
-            break;
         case B_QUEEN:
             return 'Q';
-            break;
         case B_KING:
             return 'K';
-            break;
+        default:
+            return ' ';
     }
 }
 
