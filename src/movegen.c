@@ -5,7 +5,7 @@
 #include "chessboard.h"
 #include "macros.h"
 
-void add_pawn_moves(chessboard* board, movelist* moves, bool white_to_move) {
+void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move) {
     if (white_to_move) {
         uint64_t w_pawns = board->pawns & board->white_pieces;
         uint64_t all_pieces = board->white_pieces | board->black_pieces;
@@ -90,102 +90,68 @@ void add_pawn_moves(chessboard* board, movelist* moves, bool white_to_move) {
             move_info.delta = SHIFT_SE_DELTA;
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
             add_moves(board, moves, &move_info);
-    }
+        }
+    }   
 }
 
-void add_knight_moves(chessboard* board, movelist* moves, bool white_to_move) {
+void add_knight_moves(chessboard* board, movelist* moves, const bool white_to_move) {
     uint64_t knights = 0;
-    uint64_t same_color = 0;
+    uint64_t not_same_color = 0;
+
     if (white_to_move) {
         knights = board->knights & board->white_pieces;
-        same_color = board->white_pieces;
+        not_same_color = ~board->white_pieces;
     }
     else {
         knights = board->knights & board->black_pieces;
-        same_color = board->black_pieces;
+        not_same_color = ~board->black_pieces;
     }
 
     uint64_t knight_move = 0;
+    addmove_info move_info;
 
-    knight_move = SHIFT_NNE(knights) & ~same_color; // nne
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_NNE_DELTA, CHESSMOVE_TYPE_NORMAL);
+    for (uint8_t i = 0; i < TOTAL_KNIGHT_MOVES; i++) {
+        shift knight_shift = KNIGHT_MOVESET[i];
+        knight_shift.mask &= not_same_color;
 
-    knight_move = SHIFT_NEE(knights) & ~same_color; // nee
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_NEE_DELTA, CHESSMOVE_TYPE_NORMAL);
+        knight_move = shift_bitboard(knights, &knight_shift);
+        if (knight_move) {
+            move_info.bitboard = knight_move;
+            move_info.delta = (int8_t)KNIGHT_MOVESET[i].delta;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
 
-    knight_move = SHIFT_SEE(knights) &  ~same_color; // see
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_SEE_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    knight_move = SHIFT_SSE(knights) &  ~same_color; // sse
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_SSE_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    knight_move = SHIFT_NNW(knights) &  ~same_color; // nnw
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_NNW_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    knight_move = SHIFT_NWW(knights) &  ~same_color; // nww
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_NWW_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    knight_move = SHIFT_SWW(knights) &  ~same_color; // sww
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_SWW_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    knight_move = SHIFT_SSW(knights) &  ~same_color; // ssw
-    if (knight_move)
-        add_moves(board, moves, knight_move, SHIFT_SSW_DELTA, CHESSMOVE_TYPE_NORMAL);
+            add_moves(board, moves, &move_info);
+        }
+    }
 }
 
-void add_king_moves(chessboard* board, movelist* moves, bool white_to_move) {
+void add_king_moves(chessboard* board, movelist* moves, const bool white_to_move) {
     uint64_t kings = board->kings;
-    uint64_t same_color = 0;
+    uint64_t not_same_color = 0;
 
     if (white_to_move) {
         kings &= board->white_pieces;
-        same_color = board->white_pieces;
+        not_same_color = ~board->white_pieces;
     }
     else {
         kings &= board->black_pieces;
-        same_color = board->black_pieces;
+        not_same_color = ~board->black_pieces;
     }
 
     // now try to move the king in all 8 directions
-    uint64_t king_move;
+    uint64_t king_move = 0;
+    addmove_info move_info;
 
-    king_move = SHIFT_N(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_N_DELTA, CHESSMOVE_TYPE_NORMAL);
+    for (uint8_t i = 0; i < TOTAL_KING_MOVES; i++) {
+        shift king_shift = KING_MOVESET[i];
+        king_shift.mask &= not_same_color;
 
-    king_move = SHIFT_NE(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_NE_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_E(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_E_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_SE(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_SE_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_S(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_S_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_SW(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_SW_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_W(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_W_DELTA, CHESSMOVE_TYPE_NORMAL);
-
-    king_move = SHIFT_NW(kings) & ~same_color;
-    if (king_move)
-        add_moves(board, moves, king_move, SHIFT_NW_DELTA, CHESSMOVE_TYPE_NORMAL);
-        
+        king_move = shift_bitboard(kings, &king_shift);
+        if (king_move) {
+            move_info.bitboard = king_move;
+            move_info.delta = (int8_t)KING_MOVESET[i].delta;
+            move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            add_moves(board, moves, &move_info);
+        }
+    }
 }

@@ -49,7 +49,7 @@ typedef struct {
 
 // adds moves to a movelist, can be used when all moves of the same type. Board parameter is needed to pass into
 // is_legal to check if board state is legal after move is attempted
-static inline void add_moves(chessboard* board, movelist* moves, addmove_info* info) {
+static inline void add_moves(chessboard* board, movelist* moves, const addmove_info* info) {
     uint64_t bitboard = info->bitboard;
     int8_t delta = info->delta;
     uint8_t type = info->move_type;
@@ -74,7 +74,7 @@ static inline void add_moves(chessboard* board, movelist* moves, addmove_info* i
     }
 }
 
-static inline void movelist_print(movelist* moves) {
+static inline void movelist_print(const movelist* moves) {
     for (int i = 0; i < moves->curr_size; i++) {
         char str[8];
         memcpy(str, square_name[moves->moves[i].from], 2);

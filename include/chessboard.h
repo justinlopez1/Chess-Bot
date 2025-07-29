@@ -21,16 +21,16 @@ typedef struct {
 } chessboard;
 
 // prints a single bitboard to the terminal
-void bitboard_print(uint64_t bitboard, char* c);
+void bitboard_print(uint64_t bitboard, const char* title);
 
 // prints a single chessboard to the terminal
 // lowercase = white
-void chessboard_print(chessboard* board);
+void chessboard_print(const chessboard* board);
 
 // returns chesspiece enum
 // bottom left square is index 0
 // static inline cause its fast and used repeatedly elsewhere
-static inline chesspiece get_chesspiece_at(chessboard* board, uint8_t index) {
+static inline chesspiece get_chesspiece_at(const chessboard* board, uint8_t index) {
     uint64_t get_bit_mask = 1ULL << index;
 
     if (get_bit_mask & board->white_pieces) {

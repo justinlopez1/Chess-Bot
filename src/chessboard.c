@@ -7,9 +7,9 @@
 // the 16*8 comes from a single line being printed = 16 charaacters,
 // 1 1 1 1 1 1 1 1\n = 16 characters including spaces and newline
 // and we need 8 lines printed
-void bitboard_print(uint64_t bitboard, char* c) {
+void bitboard_print(const uint64_t bitboard, const char* title) {
 
-    printf("%s", c);
+    printf("%s\n", title);
 
     char buf[(8+8+3)*(8+1)+3+3];
     uint8_t idx = 0;
@@ -49,7 +49,7 @@ void bitboard_print(uint64_t bitboard, char* c) {
     printf("%s", buf);
 }
 
-void chessboard_print(chessboard* board) {
+void chessboard_print(const chessboard* board) {
     char buf[(8+8+3)*(8+1)+3+3];
     uint8_t idx = 0;
 
