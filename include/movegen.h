@@ -32,9 +32,9 @@ void add_slider_moves(chessboard* board, movelist* moves, bool white_to_move, ch
 void add_legal_moves(chessboard* board, movelist* moves, bool white_to_move);
 
 // returns bitboard of attacked currently attacked squares, used to check if board is in check
-uint64_t get_pawn_attacked_board(const chessboard* board, bool white_to_move);
-uint64_t get_nonslider_attacked_board(const chessboard* board, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
-uint64_t get_slider_attacked_board(const chessboard* board, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
+uint64_t get_pawn_attacked_bitboard(const chessboard* board, bool white_to_move);
+uint64_t get_nonslider_attacked_bitboard(const chessboard* board, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
+uint64_t get_slider_attacked_bitboard(const chessboard* board, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
 
 // moves/shifts for the knight that are iterable
 static const shift KNIGHT_SHIFTSET[8] = {

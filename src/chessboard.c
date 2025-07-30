@@ -99,9 +99,12 @@ bool in_check(const chessboard* board, bool white_to_move) {
     else { our_king &= board->black_pieces; }
 
     // generate attacking moves and check if our king is on any of the attacking squares
-    // uint64_t attacked = get_attacked_bitboard(board, white_to_move);
-
-
+    if (our_king & get_pawn_attacked_bitboard(board, !white_to_move)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS)) { return true; }
+    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS)) { return true; }
+    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
 
     return false; 
 }
