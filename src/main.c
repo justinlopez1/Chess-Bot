@@ -77,6 +77,7 @@ int main() {
     // add_knight_moves(&knight_board, &ml, false);
     // add_slider_moves(&rook_board, &ml, false, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
 
+    /*
     chessmove move;
     move.from = 8;
     move.to = 16;
@@ -88,6 +89,11 @@ int main() {
     add_legal_moves(&board, &ml, true);
    
     chessboard_print(&board);
+    movelist_print(&ml);
+    */
+
+    add_legal_moves(&knight_board, &ml, false);
+    chessboard_print(&knight_board);
     movelist_print(&ml);
 
     return 0;

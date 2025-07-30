@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "chessboard.h"
+#include "movegen.h"
 
 // the 16*8 comes from a single line being printed = 16 charaacters,
 // 1 1 1 1 1 1 1 1\n = 16 characters including spaces and newline
@@ -87,4 +89,15 @@ void chessboard_print(const chessboard* board) {
     buf[idx++] = '\n';
     buf[idx] = '\0';
     printf("%s", buf);
+}
+
+bool in_check(const chessboard* board, bool white_to_move) {
+    // first get position (bitboard) of king
+    uint64_t our_king = board->kings;
+    if (white_to_move) { our_king &= board->white_pieces; }
+    else { our_king &= board->black_pieces; }
+
+    // generate attacking moves and check if our king is on any of the attacking squares
+    movelist moves[MOVELIST_SINGLE_PIECE_MAX_SIZE];
+    return false; 
 }

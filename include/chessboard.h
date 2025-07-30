@@ -2,6 +2,7 @@
 #define CHESSBOARD_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "macros.h"
 #include "chesspiece.h"
@@ -26,6 +27,9 @@ void bitboard_print(uint64_t bitboard, const char* title);
 // prints a single chessboard to the terminal
 // lowercase = white
 void chessboard_print(const chessboard* board);
+
+// returns true if board is in check
+bool in_check(const chessboard* board, bool white_to_move);
 
 // returns chesspiece enum
 // bottom left square is index 0

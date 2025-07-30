@@ -15,15 +15,7 @@ enum {
 // representation of chesspiece
 enum {
     CHESSPIECE_EMPTY = 0,
-    CHESSPIECE_PAWN, CHESSPIECE_KNIGHT, CHESSPIECE_BISHOP, CHESSPIECE_ROOK, CHESSPIECE_QUEEN, CHESSPIECES_KING
-};
-
-// represents slider types
-typedef uint8_t slider_type;
-enum {
-    SLIDER_ROOK,
-    SLIDER_BISHOP,
-    SLIDER_QUEEN
+    CHESSPIECE_PAWN, CHESSPIECE_KNIGHT, CHESSPIECE_BISHOP, CHESSPIECE_ROOK, CHESSPIECE_QUEEN, CHESSPIECE_KING
 };
 
 // converts chesspiece to a char that can be printed to the terminal

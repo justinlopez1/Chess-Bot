@@ -38,7 +38,7 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
         else if (GET_BIT(board->rooks, move.from)) { CLEAR_BIT(board->rooks, move.to); undo_info.piece_taken = CHESSPIECE_ROOK; }
         else if (GET_BIT(board->knights, move.from)) { CLEAR_BIT(board->knights, move.to); undo_info.piece_taken = CHESSPIECE_KNIGHT; }
         else if (GET_BIT(board->queens, move.from)) { CLEAR_BIT(board->queens, move.to); undo_info.piece_taken = CHESSPIECE_QUEEN; }
-        else { CLEAR_BIT(board->kings, move.to); undo_info.piece_taken = CHESSPIECES_KING; }
+        else { CLEAR_BIT(board->kings, move.to); undo_info.piece_taken = CHESSPIECE_KING; }
     }
 
     // apply the move

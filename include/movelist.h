@@ -19,7 +19,10 @@ static const char* const square_name[64] = {
     "a8","b8","c8","d8","e8","f8","g8","h8"
 };
 
-enum { MOVELIST_MAX_SIZE = 256 };
+enum { 
+    MOVELIST_MAX_SIZE = 256,
+    MOVELIST_SINGLE_PIECE_MAX_SIZE = 32
+};
 
 
 // used to store list of moves
@@ -37,14 +40,15 @@ static inline uint8_t ctz(uint64_t num) {
     return __builtin_ctzll(num);
 }
 
+// bitboard holds the bitboard after the shift
 // struct that holds the info needed to add a move to a movelist
 // delta is how pieces were shifted, so if pieces were pushed 
-// delta is how pieces were shifted, so if pieces were pushed. One rank forware would be positiv 8
 // type is move type, ie CHESSMOVE_TYPE_NORMAL, CHESSMOVE_TYPE_ENPESSANT
 typedef struct {
     uint64_t bitboard;
     int8_t delta;
     uint8_t move_type;
+    bool white_to_move;
 } addmove_info;
 
 // adds moves to a movelist, can be used when all moves of the same type. Board parameter is needed to pass into
@@ -65,7 +69,7 @@ static inline void add_moves(chessboard* board, movelist* moves, const addmove_i
         move_ptr->type = type;
         
         // make sure the move was legal
-        if (is_legal(board, *move_ptr)) {
+        if (is_legal(board, *move_ptr, info->white_to_move)) {
             moves->curr_size++;
         }
 

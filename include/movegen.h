@@ -25,9 +25,10 @@ static inline uint64_t shift_bitboard(const uint64_t bitboard, const shift* shif
 
 // adds all of a move type to the movelist object moves
 void add_pawn_moves(chessboard* board, movelist* moves, bool white_to_move);
-void add_knight_moves(chessboard* board, movelist* moves, bool white_to_move);
-void add_king_moves(chessboard* board, movelist* moves, bool white_to_move);
-void add_slider_moves(chessboard* board, movelist* moves, bool white_to_move, slider_type slider, const shift* shiftset, uint8_t total_shifts);
+void add_nonslider_moves(chessboard* board, movelist* moves, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
+void add_slider_moves(chessboard* board, movelist* moves, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts);
+
+// returns bitboard of attacked currently attacked squares, used to check if board is in check
 
 // calls all the above functions to add all legal moves to a movelist
 void add_legal_moves(chessboard* board, movelist* moves, bool white_to_move);

@@ -95,82 +95,61 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
     }   
 }
 
-void add_knight_moves(chessboard* board, movelist* moves, const bool white_to_move) {
-    uint64_t knights = 0;
+void add_nonslider_moves(chessboard* board, movelist* moves, bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts) {
+    uint64_t pieces = 0;
+    switch (piece) {
+        case (CHESSPIECE_KNIGHT) :
+            pieces = board->knights;
+            break;
+        case (CHESSPIECE_KING) :
+            pieces = board->kings;
+            break;
+        default :
+            exit(1);
+    }
     uint64_t not_same_color = 0;
 
     if (white_to_move) {
-        knights = board->knights & board->white_pieces;
+        pieces &= board->white_pieces;
         not_same_color = ~board->white_pieces;
     }
     else {
-        knights = board->knights & board->black_pieces;
+        pieces &= board->black_pieces;
         not_same_color = ~board->black_pieces;
     }
 
-    uint64_t knight_move = 0;
-    shift knight_shift;
-
-    addmove_info move_info;
-    move_info.move_type = CHESSMOVE_TYPE_NORMAL;
-
-    for (uint8_t i = 0; i < TOTAL_KNIGHT_SHIFTS; i++) {
-        knight_shift = KNIGHT_SHIFTSET[i];
-        knight_shift.mask &= not_same_color;
-
-        knight_move = shift_bitboard(knights, &knight_shift);
-        if (knight_move) {
-            move_info.bitboard = knight_move;
-            move_info.delta = KNIGHT_SHIFTSET[i].delta;
-
-            add_moves(board, moves, &move_info);
-        }
-    }
-}
-
-void add_king_moves(chessboard* board, movelist* moves, const bool white_to_move) {
-    uint64_t kings = board->kings;
-    uint64_t not_same_color = 0;
-
-    if (white_to_move) {
-        kings &= board->white_pieces;
-        not_same_color = ~board->white_pieces;
-    }
-    else {
-        kings &= board->black_pieces;
-        not_same_color = ~board->black_pieces;
-    }
+    if (!pieces) { return; }
 
     // now try to move the king in all 8 directions
-    uint64_t king_move = 0;
-    shift king_shift;
+    uint64_t piece_move = 0;
+    shift piece_shift;
 
     addmove_info move_info;
     move_info.move_type = CHESSMOVE_TYPE_NORMAL;
 
-    for (uint8_t i = 0; i < TOTAL_KING_QUEEN_SHIFTS; i++) {
-        king_shift = KING_QUEEN_SHIFTSET[i];
-        king_shift.mask &= not_same_color;
+    for (uint8_t i = 0; i < total_shifts; i++) {
+        piece_shift = shiftset[i];
+        piece_shift.mask &= not_same_color;
 
-        king_move = shift_bitboard(kings, &king_shift);
-        if (king_move) {
-            move_info.bitboard = king_move;
-            move_info.delta = KING_QUEEN_SHIFTSET[i].delta;
+        piece_move = shift_bitboard(pieces, &piece_shift);
+        if (piece_move) {
+            move_info.bitboard = piece_move;
+            move_info.delta = shiftset[i].delta;
             add_moves(board, moves, &move_info);
         }
     }
 }
 
-void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_move, slider_type slider, const shift* shiftset, uint8_t total_shifts) {
+void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts) {
     uint64_t pieces = 0;
-    switch (slider) {
-        case (SLIDER_BISHOP):
+    switch (piece) {
+        case (CHESSPIECE_BISHOP):
             pieces = board->bishops;
             break;
-        case (SLIDER_QUEEN):
+        case (CHESSPIECE_QUEEN):
             pieces = board->queens;
             break;
-        case (SLIDER_ROOK):
+        case (CHESSPIECE_ROOK):
             pieces = board->rooks;
             break;
         default:
@@ -191,9 +170,7 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
         not_other_color = ~board->white_pieces;
     }
 
-    if (!pieces) {
-        return;
-    }
+    if (!pieces) { return; }
 
     uint64_t current_pieces = 0;
     shift piece_shift;
@@ -226,10 +203,11 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
 
 void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
     add_pawn_moves(board, moves, white_to_move);
-    add_knight_moves(board, moves, white_to_move);
-    add_king_moves(board, moves, white_to_move);
+    
+    add_nonslider_moves(board, moves, white_to_move, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS);
+    add_nonslider_moves(board, moves, white_to_move, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
 
-    add_slider_moves(board, moves, white_to_move, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
-    add_slider_moves(board, moves, white_to_move, SLIDER_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS);
-    add_slider_moves(board, moves, white_to_move, SLIDER_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
+    add_slider_moves(board, moves, white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
+    add_slider_moves(board, moves, white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS);
+    add_slider_moves(board, moves, white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
 }

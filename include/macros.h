@@ -35,14 +35,16 @@ static const uint64_t FILE_H = 0x8080808080808080ULL;
 #define SHIFT_W(bitboard) (( (bitboard) >> 1) & ~FILE_H)
 #define SHIFT_NW(bitboard) (( (bitboard) << 7) & ~FILE_H)
 // delta amounts of the shifts
-#define SHIFT_N_DELTA  (8)
-#define SHIFT_NE_DELTA (9)
-#define SHIFT_E_DELTA  (1)
-#define SHIFT_SE_DELTA (-7)
-#define SHIFT_S_DELTA  (-8)
-#define SHIFT_SW_DELTA (-9)
-#define SHIFT_W_DELTA  (-1)
-#define SHIFT_NW_DELTA (7)
+enum {
+    SHIFT_N_DELTA = 8,
+    SHIFT_NE_DELTA = 9,
+    SHIFT_E_DELTA = 1,
+    SHIFT_SE_DELTA = -7,
+    SHIFT_S_DELTA = -8,
+    SHIFT_SW_DELTA = -9,
+    SHIFT_W_DELTA = -1,
+    SHIFT_NW_DELTA = 7
+};
 
 
 #endif /* MACROS_H */
