@@ -26,6 +26,10 @@ enum {
 };
 
 static inline bool is_legal(chessboard* board, chessmove move) {
+    // make move on baord
+    // check if board is in check
+    // undo the move
+    // return true or false
    return true; 
 }
 

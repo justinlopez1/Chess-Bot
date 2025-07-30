@@ -148,14 +148,14 @@ void add_king_moves(chessboard* board, movelist* moves, const bool white_to_move
     addmove_info move_info;
     move_info.move_type = CHESSMOVE_TYPE_NORMAL;
 
-    for (uint8_t i = 0; i < TOTAL_KING_SHIFTS; i++) {
-        king_shift = KING_SHIFTSET[i];
+    for (uint8_t i = 0; i < TOTAL_KING_QUEEN_SHIFTS; i++) {
+        king_shift = KING_QUEEN_SHIFTSET[i];
         king_shift.mask &= not_same_color;
 
         king_move = shift_bitboard(kings, &king_shift);
         if (king_move) {
             move_info.bitboard = king_move;
-            move_info.delta = KING_SHIFTSET[i].delta;
+            move_info.delta = KING_QUEEN_SHIFTSET[i].delta;
             add_moves(board, moves, &move_info);
         }
     }
@@ -230,6 +230,6 @@ void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
     add_king_moves(board, moves, white_to_move);
 
     add_slider_moves(board, moves, white_to_move, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
-    // add rest 
-
+    add_slider_moves(board, moves, white_to_move, SLIDER_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS);
+    add_slider_moves(board, moves, white_to_move, SLIDER_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
 }

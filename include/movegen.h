@@ -46,7 +46,9 @@ static const shift KNIGHT_SHIFTSET[8] = {
 static const uint8_t TOTAL_KNIGHT_SHIFTS = 8;
 
 // moves/shifts for the king that are iterable, simply goes in all 8 nearby directions
-static const shift KING_SHIFTSET[8] = {
+// same for queen because the queen moves the same way, just can repeatedly shift so it will
+// be generated using slider logic
+static const shift KING_QUEEN_SHIFTSET[8] = {
     { 8, ~(0) }, // n
     { 9, ~(FILE_A) }, // ne
     { 1, ~(FILE_A) }, // e
@@ -56,7 +58,7 @@ static const shift KING_SHIFTSET[8] = {
     { -1, ~(FILE_H) }, // w
     { 7, ~(FILE_H) } // nw
 };
-static const uint8_t TOTAL_KING_SHIFTS = 8;
+static const uint8_t TOTAL_KING_QUEEN_SHIFTS = 8;
 
 static const shift ROOK_SINGLE_SHIFTS[4] = {
     { 8, ~(0) }, // n
@@ -65,5 +67,15 @@ static const shift ROOK_SINGLE_SHIFTS[4] = {
     { -1, ~(FILE_H) } // w
 };
 static const uint8_t TOTAL_ROOK_SHIFTS = 4;
+
+static const shift BISHOP_SINGLE_SHIFTS[4] = {
+    { 9, ~(FILE_A) }, // ne
+    { -7, ~(FILE_A) }, // se
+    { -9, ~(FILE_H) }, // sw
+    { 7, ~(FILE_H) } // nw
+};
+static const uint8_t TOTAL_BISHOP_SHIFTS = 4;
+
+
 
 #endif /* MOVEGEN_H */
