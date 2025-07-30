@@ -11,6 +11,7 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         uint64_t w_pawns = board->pawns & board->white_pieces;
         uint64_t all_pieces = board->white_pieces | board->black_pieces;
         addmove_info move_info;
+        move_info.white_to_move = white_to_move;
 
         // calculate single pushes
         uint64_t single_push = SHIFT_N(w_pawns) & ~all_pieces; 
@@ -55,6 +56,7 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         uint64_t b_pawns = board->pawns & board->black_pieces;
         uint64_t all_pieces = board->white_pieces | board->black_pieces;
         addmove_info move_info;
+        move_info.white_to_move = white_to_move;
 
         // calculate single pushes
         uint64_t single_push = SHIFT_S(b_pawns) & ~all_pieces; 
@@ -120,12 +122,13 @@ void add_nonslider_moves(chessboard* board, movelist* moves, bool white_to_move,
 
     if (!pieces) { return; }
 
-    // now try to move the king in all 8 directions
+    // now compute all its moves
     uint64_t piece_move = 0;
     shift piece_shift;
 
     addmove_info move_info;
     move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+    move_info.white_to_move = white_to_move;
 
     for (uint8_t i = 0; i < total_shifts; i++) {
         piece_shift = shiftset[i];
@@ -178,6 +181,7 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
 
     addmove_info move_info;
     move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+    move_info.white_to_move = white_to_move;
 
     for (uint8_t i = 0; i < total_shifts; i++) {
         current_pieces = pieces;
@@ -203,11 +207,57 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
 
 void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
     add_pawn_moves(board, moves, white_to_move);
-    
+
     add_nonslider_moves(board, moves, white_to_move, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS);
     add_nonslider_moves(board, moves, white_to_move, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
 
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS);
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
+}
+
+uint64_t get_pawn_attacked_board(const chessboard * board, bool white_to_move) {
+    return 0;
+}
+
+uint64_t get_nonslider_attacked_board(const chessboard * board, bool white_to_move, chesspiece piece, const shift * shiftset, uint8_t total_shifts) {
+    uint64_t pieces = 0;
+    switch (piece) {
+        case (CHESSPIECE_KNIGHT) :
+            pieces = board->knights;
+            break;
+        case (CHESSPIECE_KING) :
+            pieces = board->kings;
+            break;
+        default :
+            exit(1);
+    }
+    uint64_t not_same_color = 0;
+
+    if (white_to_move) {
+        pieces &= board->white_pieces;
+        not_same_color = ~board->white_pieces;
+    }
+    else {
+        pieces &= board->black_pieces;
+        not_same_color = ~board->black_pieces;
+    }
+
+    if (!pieces) { return 0ULL; }
+
+    shift piece_shift = 0;
+    uint64_t attacked_bitboard = 0;
+
+    for (uint8_t i = 0; i < total_shifts; i++) {
+        piece_shift = shiftset[i];
+        piece_shift.mask &= not_same_color;
+
+        attacked_bitboard |= shift_bitboard(pieces, &piece_shift);
+    }
+    
+    return attacked_bitboard;
+}
+
+uint64_t get_slider_attacked_board(const chessboard * board, bool white_to_move, chesspiece piece, const shift * shiftset, uint8_t total_shifts) {
+    return 0;
 }

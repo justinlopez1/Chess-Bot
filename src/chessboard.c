@@ -91,6 +91,7 @@ void chessboard_print(const chessboard* board) {
     printf("%s", buf);
 }
 
+
 bool in_check(const chessboard* board, bool white_to_move) {
     // first get position (bitboard) of king
     uint64_t our_king = board->kings;
@@ -98,6 +99,9 @@ bool in_check(const chessboard* board, bool white_to_move) {
     else { our_king &= board->black_pieces; }
 
     // generate attacking moves and check if our king is on any of the attacking squares
-    movelist moves[MOVELIST_SINGLE_PIECE_MAX_SIZE];
+    // uint64_t attacked = get_attacked_bitboard(board, white_to_move);
+
+
+
     return false; 
 }
