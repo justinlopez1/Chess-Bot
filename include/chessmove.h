@@ -6,13 +6,21 @@
 
 #include "chesspiece.h"
 #include "chessboard.h"
+#include "macros.h"
 
 // struct represents a chess move
+// from and to are index's in the biboard
 typedef struct {
     uint8_t from;
     uint8_t to;
     uint8_t type; // this represents a ton of things shown below
 } chessmove;
+
+// information needed to undo a chessmove
+typedef struct {
+    chessmove move_to_undo; // the move that was previously made, so to undo it you would perform this move backwards
+    chesspiece piece_taken; // indicates the piece that was taken, if applicable
+} undo_chessmove;
 
 enum {
     CHESSMOVE_TYPE_NORMAL = 0,
@@ -25,12 +33,17 @@ enum {
     CHESSMOVE_TYPE_ENPESSANT
 };
 
+// return stdbool indicating wether or not the provided move is legal on the provided board
+// a move is illegal if it tries to move a pinned piece, so this is all this function checks for
+// the provided move should be a valid psuedo move
 static inline bool is_legal(chessboard* board, chessmove move) {
-    // make move on baord
-    // check if board is in check
-    // undo the move
-    // return true or false
-   return true; 
-}
+    return true;
+} 
+
+// performs a chessmove on a board, modifying the data that the pointer board is pointing to
+undo_chessmove make_move(chessboard* board, chessmove move); 
+
+// performs the reverse of a chessmove on a board, modifying the data that the pointer board is pointing to
+void unmake_move(chessboard* board, chessmove move);
 
 #endif /* CHESSMOVE_H */

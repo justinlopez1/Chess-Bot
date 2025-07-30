@@ -11,6 +11,12 @@ enum {
     B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING
 };
 
+// another representation of chesspieces without color
+enum {
+    CHESSPIECE_EMPTY = 0,
+    CHESSPIECE_PAWN, CHESSPIECE_KNIGHT, CHESSPIECE_BISHOP, CHESSPIECE_ROOK, CHESSPIECE_QUEEN, CHESSPIECES_KING
+};
+
 // represents slider types
 typedef uint8_t slider_type;
 enum {
