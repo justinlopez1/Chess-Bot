@@ -33,11 +33,11 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     else { other_color_ptr = &board->white_pieces; same_color_ptr = &board->black_pieces; }
     if (GET_BIT(*other_color_ptr, move.to)) { // this move does involve the taking of an opposing piece
         // remove the piece being taken and remeber the piece type 
-        if (GET_BIT(board->pawns, move.from)) { CLEAR_BIT(board->pawns, move.to); undo_info.piece_taken = CHESSPIECE_PAWN; }
-        else if (GET_BIT(board->bishops, move.from)) { CLEAR_BIT(board->bishops, move.to); undo_info.piece_taken = CHESSPIECE_BISHOP; }
-        else if (GET_BIT(board->rooks, move.from)) { CLEAR_BIT(board->rooks, move.to); undo_info.piece_taken = CHESSPIECE_ROOK; }
-        else if (GET_BIT(board->knights, move.from)) { CLEAR_BIT(board->knights, move.to); undo_info.piece_taken = CHESSPIECE_KNIGHT; }
-        else if (GET_BIT(board->queens, move.from)) { CLEAR_BIT(board->queens, move.to); undo_info.piece_taken = CHESSPIECE_QUEEN; }
+        if (GET_BIT(board->pawns, move.to)) { CLEAR_BIT(board->pawns, move.to); undo_info.piece_taken = CHESSPIECE_PAWN; }
+        else if (GET_BIT(board->bishops, move.to)) { CLEAR_BIT(board->bishops, move.to); undo_info.piece_taken = CHESSPIECE_BISHOP; }
+        else if (GET_BIT(board->rooks, move.to)) { CLEAR_BIT(board->rooks, move.to); undo_info.piece_taken = CHESSPIECE_ROOK; }
+        else if (GET_BIT(board->knights, move.to)) { CLEAR_BIT(board->knights, move.to); undo_info.piece_taken = CHESSPIECE_KNIGHT; }
+        else if (GET_BIT(board->queens, move.to)) { CLEAR_BIT(board->queens, move.to); undo_info.piece_taken = CHESSPIECE_QUEEN; }
         else { CLEAR_BIT(board->kings, move.to); undo_info.piece_taken = CHESSPIECE_KING; }
     }
 

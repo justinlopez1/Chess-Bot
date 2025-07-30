@@ -44,9 +44,15 @@ void unmake_move(chessboard* board, undo_chessmove undo_info);
 // a move is illegal if it tries to move a pinned piece, so this is all this function checks for
 // the provided move should be a valid psuedo move
 static inline bool is_legal(chessboard* board, chessmove move, bool white_to_move) {
+    uint64_t queens = board->queens;
+    uint64_t white = board->white_pieces;
+    uint64_t black = board->black_pieces;
     undo_chessmove undo_info = make_move(board, move);
     bool ret = in_check(board, white_to_move);
     unmake_move(board, undo_info);
+    if (queens != board->queens || white != board->white_pieces || black != board->black_pieces) {
+        volatile int x = 50;
+    }
     return !ret;
 } 
 

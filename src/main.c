@@ -71,6 +71,18 @@ int main() {
         .black_pieces = 1ULL << 32
     };
 
+chessboard pinned_board = {
+    .kings        = (1ULL << 0)  | (1ULL << 63),      // a1 (bit 0) + h8 (bit 63)
+    .queens       = (1ULL << 36),                    // e5 (bit 36)
+    .bishops      = 0ULL,
+    .rooks        = (1ULL << 5),                     // f1 (bit 5)
+    .knights      = 0ULL,
+    .pawns        = (1ULL << 27),                    // e4 (bit 28)
+    .white_pieces = (1ULL << 0) | (1ULL << 5) | (1ULL << 27),  // king, rook, pawn
+    .black_pieces = (1ULL << 63) | (1ULL << 36)               // king, queen
+};
+
+
     movelist ml;
     movelist_init(&ml);
     // add_pawn_moves(&board, &ml, false); 
@@ -82,12 +94,13 @@ int main() {
     move.to = 16;
     move.type = CHESSMOVE_TYPE_NORMAL;
 
-    undo_chessmove u =  make_move(&board, move);
-    unmake_move(&board, u);
+    // undo_chessmove u =  make_move(&board, move);
+    // unmake_move(&board, u);
+    chessboard_print(&pinned_board);
     
-    add_legal_moves(&board, &ml, true);
+    add_legal_moves(&pinned_board, &ml, true);
    
-    chessboard_print(&board);
+    chessboard_print(&pinned_board);
     movelist_print(&ml);
 
     /*
