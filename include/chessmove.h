@@ -44,6 +44,6 @@ static inline bool is_legal(chessboard* board, chessmove move) {
 undo_chessmove make_move(chessboard* board, chessmove move); 
 
 // performs the reverse of a chessmove on a board, modifying the data that the pointer board is pointing to
-void unmake_move(chessboard* board, chessmove move);
+void unmake_move(chessboard* board, undo_chessmove undo_info);
 
 #endif /* CHESSMOVE_H */

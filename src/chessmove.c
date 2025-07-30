@@ -51,6 +51,6 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     return undo_info;
 }
 
-void unmake_move(chessboard* board, chessmove move) {
-    
+void unmake_move(chessboard* board, undo_chessmove undo_info) {
+
 }
