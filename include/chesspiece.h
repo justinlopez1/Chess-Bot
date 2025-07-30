@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 // represents a chesspiece in one byte
+// only used in the printing functions
 typedef uint8_t chesspiece;
 enum {
     PIECE_EMPTY = 0,
@@ -11,7 +12,7 @@ enum {
     B_PAWN, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING
 };
 
-// another representation of chesspieces without color
+// representation of chesspiece
 enum {
     CHESSPIECE_EMPTY = 0,
     CHESSPIECE_PAWN, CHESSPIECE_KNIGHT, CHESSPIECE_BISHOP, CHESSPIECE_ROOK, CHESSPIECE_QUEEN, CHESSPIECES_KING

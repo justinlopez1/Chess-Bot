@@ -52,5 +52,35 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
 }
 
 void unmake_move(chessboard* board, undo_chessmove undo_info) {
+    // determine piece
+    uint64_t* pieces_moved = NULL;
+    if (GET_BIT(board->pawns, undo_info.move_to_undo.to)) { pieces_moved = &(board->pawns); }
+    else if (GET_BIT(board->bishops, undo_info.move_to_undo.to)) { pieces_moved = &(board->bishops); }
+    else if (GET_BIT(board->rooks, undo_info.move_to_undo.to)) { pieces_moved = &(board->rooks); }
+    else if (GET_BIT(board->knights, undo_info.move_to_undo.to)) { pieces_moved = &(board->knights); }
+    else if (GET_BIT(board->queens, undo_info.move_to_undo.to)) { pieces_moved = &(board->queens); }
+    else { pieces_moved = &(board->kings); }
 
+    // determine color
+    bool white_to_move = 0;
+    if (GET_BIT(board->white_pieces, undo_info.move_to_undo.to)) { white_to_move = true; }
+
+    // get colors pointers
+    uint64_t* other_color_ptr = NULL;
+    uint64_t* same_color_ptr = NULL;
+    if (white_to_move) { other_color_ptr = &board->black_pieces; same_color_ptr = &board->white_pieces; }
+    else { other_color_ptr = &board->white_pieces; same_color_ptr = &board->black_pieces; }
+
+    // undo the move
+    CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
+    SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
+    CLEAR_BIT(*same_color_ptr, undo_info.move_to_undo.to);
+    SET_BIT(*same_color_ptr, undo_info.move_to_undo.from);
+
+    // replace potential piece     
+    uint64_t* taken_pieces = get_pieces_pointer(board, undo_info.piece_taken);
+    if (taken_pieces != NULL) {
+        SET_BIT(*taken_pieces, undo_info.move_to_undo.to);
+        SET_BIT(*other_color_ptr, undo_info.move_to_undo.to);
+    }
 }

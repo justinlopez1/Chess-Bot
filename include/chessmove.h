@@ -40,6 +40,27 @@ static inline bool is_legal(chessboard* board, chessmove move) {
     return true;
 } 
 
+// returns pointer to the bitboard that this piece is associated to
+static inline uint64_t* get_pieces_pointer(chessboard* board, chesspiece piece) {
+    switch (piece) {
+        case (CHESSPIECE_EMPTY) :
+            return NULL;
+        case (CHESSPIECE_PAWN) :
+            return &board->pawns;
+        case (CHESSPIECE_KNIGHT) :
+            return &board->knights;
+        case (CHESSPIECE_BISHOP) :
+            return &board->bishops;
+        case (CHESSPIECE_ROOK) :
+            return &board->rooks;
+        case (CHESSPIECE_QUEEN) :
+            return &board->queens;
+        case (CHESSPIECES_KING) :
+            return &board->kings;
+    }
+    return NULL;
+}
+
 // performs a chessmove on a board, modifying the data that the pointer board is pointing to
 undo_chessmove make_move(chessboard* board, chessmove move); 
 

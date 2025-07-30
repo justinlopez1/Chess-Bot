@@ -82,7 +82,8 @@ int main() {
     move.to = 16;
     move.type = CHESSMOVE_TYPE_NORMAL;
 
-    make_move(&board, move);
+    undo_chessmove u =  make_move(&board, move);
+    unmake_move(&board, u);
     
     add_legal_moves(&board, &ml, true);
    
