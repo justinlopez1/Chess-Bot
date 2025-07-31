@@ -16,9 +16,13 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         // calculate single pushes
         uint64_t single_push = SHIFT_N(w_pawns) & ~all_pieces; 
         if (single_push) {
-            move_info.bitboard = single_push;
+            // add promoting moves
+            move_info.bitboard = single_push & RANK_8;
             move_info.delta = SHIFT_N_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+            // then take out the regular ones to the top row
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = single_push & ~RANK_8;
             add_moves(board, moves, &move_info);
         }
 
@@ -37,18 +41,24 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         // calculate left take
         uint64_t left_take = SHIFT_NW(w_pawns) & board->black_pieces;
         if (left_take) {
-            move_info.bitboard = left_take;
+            move_info.bitboard = left_take & RANK_8;
             move_info.delta = SHIFT_NW_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = left_take & ~RANK_8;
             add_moves(board, moves, &move_info);
         }
 
         // calculate right take
         uint64_t right_take = SHIFT_NE(w_pawns) & board->black_pieces;
         if (right_take) {
-            move_info.bitboard = right_take;
+            move_info.bitboard = right_take & RANK_8;
             move_info.delta = SHIFT_NE_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = right_take & ~RANK_8;
             add_moves(board, moves, &move_info);
         }
     }
@@ -61,9 +71,12 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         // calculate single pushes
         uint64_t single_push = SHIFT_S(b_pawns) & ~all_pieces; 
         if (single_push) {
-            move_info.bitboard = single_push;
+            move_info.bitboard = single_push & RANK_1;
             move_info.delta = SHIFT_S_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = single_push & ~RANK_1;
             add_moves(board, moves, &move_info);
         }
 
@@ -80,18 +93,24 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         // calculate left take
         uint64_t left_take = SHIFT_SW(b_pawns) & board->white_pieces;
         if (left_take) {
-            move_info.bitboard = left_take;
+            move_info.bitboard = left_take & RANK_1;
             move_info.delta = SHIFT_SW_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = left_take & ~RANK_1;
             add_moves(board, moves, &move_info);
         }
 
         // calculate right take
         uint64_t right_take = SHIFT_SE(b_pawns) & board->white_pieces;
         if (right_take) {
-            move_info.bitboard = right_take;
+            move_info.bitboard = right_take & RANK_1;
             move_info.delta = SHIFT_SE_DELTA;
+            add_promotion_moves(board, moves, &move_info);
+
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
+            move_info.bitboard = right_take & ~RANK_1;
             add_moves(board, moves, &move_info);
         }
     }   
@@ -223,7 +242,6 @@ uint64_t get_pawn_attacked_bitboard(const chessboard * board, bool white_to_move
     uint64_t attacked_bitboard = 0;
     if (white_to_move) {
         uint64_t w_pawns = board->pawns & board->white_pieces;
-        uint64_t all_pieces = board->white_pieces | board->black_pieces;
 
         // calculate left take
         uint64_t left_take = SHIFT_NW(w_pawns);
@@ -235,7 +253,6 @@ uint64_t get_pawn_attacked_bitboard(const chessboard * board, bool white_to_move
     }
     else {
         uint64_t b_pawns = board->pawns & board->black_pieces;
-        uint64_t all_pieces = board->white_pieces | board->black_pieces;
 
         // calculate left take
         uint64_t left_take = SHIFT_SW(b_pawns);
@@ -320,13 +337,11 @@ uint64_t get_slider_attacked_bitboard(const chessboard * board, bool white_to_mo
 
     uint64_t current_pieces = 0;
     shift piece_shift;
-    int8_t shift_count = 0;
     uint64_t attacked_bitbaord = 0;
 
     for (uint8_t i = 0; i < total_shifts; i++) {
         current_pieces = pieces;
         piece_shift = shiftset[i];
-        shift_count = 1;
 
         // try first shift then add in while loop to use loop as if statement condition
         current_pieces = shift_bitboard(current_pieces, &piece_shift);

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "chesspiece.h"
 #include "chessboard.h"
@@ -42,8 +43,30 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     }
 
     // apply the move
-    CLEAR_BIT(*pieces_moved, move.from);
-    SET_BIT(*pieces_moved, move.to);
+    switch (move.type) {
+        case CHESSMOVE_TYPE_NORMAL :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(*pieces_moved, move.to);
+            break;
+        case CHESSMOVE_TYPE_B_PROMOTION :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(board->bishops, move.to);
+            break;
+        case CHESSMOVE_TYPE_Q_PROMOTION :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(board->queens, move.to);
+            break;
+        case CHESSMOVE_TYPE_N_PROMOTION :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(board->knights, move.to);
+            break;
+        case CHESSMOVE_TYPE_R_PROMOTION :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(board->rooks, move.to);
+            break;
+        default :
+            exit(1);
+    }
 
     CLEAR_BIT(*same_color_ptr, move.from);
     SET_BIT(*same_color_ptr, move.to);
@@ -72,8 +95,23 @@ void unmake_move(chessboard* board, undo_chessmove undo_info) {
     else { other_color_ptr = &board->white_pieces; same_color_ptr = &board->black_pieces; }
 
     // undo the move
-    CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
-    SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
+    if (undo_info.move_to_undo.type == CHESSMOVE_TYPE_NORMAL) {
+        CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
+        SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
+    }
+    // else if any type of promotion move
+    else if (
+        undo_info.move_to_undo.type == CHESSMOVE_TYPE_B_PROMOTION || 
+        undo_info.move_to_undo.type == CHESSMOVE_TYPE_R_PROMOTION || 
+        undo_info.move_to_undo.type == CHESSMOVE_TYPE_Q_PROMOTION || 
+        undo_info.move_to_undo.type == CHESSMOVE_TYPE_N_PROMOTION ) {
+        CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
+        SET_BIT(board->pawns, undo_info.move_to_undo.from);
+    }
+    else {
+        exit(1);
+    }
+
     CLEAR_BIT(*same_color_ptr, undo_info.move_to_undo.to);
     SET_BIT(*same_color_ptr, undo_info.move_to_undo.from);
 

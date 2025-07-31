@@ -82,6 +82,16 @@ chessboard pinned_board = {
     .black_pieces = (1ULL << 63) | (1ULL << 36)               // king, queen
 };
 
+chessboard promotion = {
+    .kings        = (1ULL << 0)  | (1ULL << 63),      // a1 (bit 0) + h8 (bit 63)
+    .queens       = (1ULL << 36),                    // e5 (bit 36)
+    .bishops      = 0ULL,
+    .rooks        = (1ULL << 5),                     // f1 (bit 5)
+    .knights      = 0ULL,
+    .pawns        = (1ULL << 27) | (1ULL << 48),                    // e4 (bit 28)
+    .white_pieces = (1ULL << 0) | (1ULL << 5) | (1ULL << 27) | (1ULL << 48),  // king, rook, pawn
+    .black_pieces = (1ULL << 63) | (1ULL << 36)               // king, queen
+};
 
     movelist ml;
     movelist_init(&ml);
@@ -96,11 +106,11 @@ chessboard pinned_board = {
 
     // undo_chessmove u =  make_move(&board, move);
     // unmake_move(&board, u);
-    chessboard_print(&pinned_board);
+    chessboard_print(&promotion);
     
-    add_legal_moves(&pinned_board, &ml, true);
+    add_legal_moves(&promotion, &ml, true);
    
-    chessboard_print(&pinned_board);
+    chessboard_print(&promotion);
     movelist_print(&ml);
 
     /*

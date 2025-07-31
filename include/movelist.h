@@ -78,7 +78,19 @@ static inline void add_moves(chessboard* board, movelist* moves, const addmove_i
     }
 }
 
-enum { MOVE_STRING_LENGTH = 7 };
+static inline void add_promotion_moves(chessboard* board, movelist* moves, addmove_info* move_info) {
+    // add each promotion
+    move_info->move_type = CHESSMOVE_TYPE_Q_PROMOTION;
+    add_moves(board, moves, move_info);
+    move_info->move_type = CHESSMOVE_TYPE_B_PROMOTION;
+    add_moves(board, moves, move_info);
+    move_info->move_type = CHESSMOVE_TYPE_R_PROMOTION;
+    add_moves(board, moves, move_info);
+    move_info->move_type = CHESSMOVE_TYPE_N_PROMOTION;
+    add_moves(board, moves, move_info);
+}
+
+enum { MOVE_STRING_LENGTH = 8 };
 
 static inline void movelist_print(const movelist* moves) {
     for (int i = 0; i < moves->curr_size; i++) {
@@ -93,6 +105,24 @@ static inline void movelist_print(const movelist* moves) {
 
         memcpy(str+idx, square_name[moves->moves[i].to], 2);
         idx+=2;
+
+        switch (moves->moves[i].type) {
+            case CHESSMOVE_TYPE_NORMAL :
+            str[idx++] = '-';
+                break;
+            case CHESSMOVE_TYPE_B_PROMOTION :
+                str[idx++] = 'B';
+                break;
+            case CHESSMOVE_TYPE_R_PROMOTION :
+                str[idx++] = 'R';
+                break;
+            case CHESSMOVE_TYPE_Q_PROMOTION :
+                str[idx++] = 'Q';
+                break;
+            case CHESSMOVE_TYPE_N_PROMOTION :
+                str[idx++] = 'N';
+                break;
+        }
 
         str[idx++] = '\n';
         str[idx++] = '\0';
