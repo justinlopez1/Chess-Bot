@@ -186,18 +186,21 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
     for (uint8_t i = 0; i < total_shifts; i++) {
         current_pieces = pieces;
         piece_shift = shiftset[i];
-        piece_shift.mask &= not_same_color;
         shift_count = 1;
 
         // try first shift then add in while loop to use loop as if statement condition
         current_pieces = shift_bitboard(current_pieces, &piece_shift);
         while (current_pieces) {
 
+            // check if our shift has us on a teammates color, if so we should remove that bit
+            current_pieces &= not_same_color;
+            
             // add current pieces moves
             move_info.bitboard = current_pieces;
             move_info.delta = (int8_t)(piece_shift.delta * (shift_count++));
             add_moves(board, moves, &move_info);
 
+            // check if our shift is on top of opponents color, meaning we are taking it meaning we should remove it after adding the move
             current_pieces &= not_other_color;
 
             current_pieces = shift_bitboard(current_pieces, &piece_shift);
@@ -323,13 +326,24 @@ uint64_t get_slider_attacked_bitboard(const chessboard * board, bool white_to_mo
     for (uint8_t i = 0; i < total_shifts; i++) {
         current_pieces = pieces;
         piece_shift = shiftset[i];
-        piece_shift.mask &= not_same_color;
         shift_count = 1;
 
+        // try first shift then add in while loop to use loop as if statement condition
+        current_pieces = shift_bitboard(current_pieces, &piece_shift);
         while (current_pieces) {
-            current_pieces = shift_bitboard(current_pieces, &piece_shift);
+
+            // check if our shift has us on a teammates color, if so we should remove that bit
+            current_pieces &= not_same_color;
+            
+            // add current pieces moves
             attacked_bitbaord |= current_pieces;
+
+            // check if our shift is on top of opponents color, meaning we are taking it meaning we should remove it after adding the move
+            current_pieces &= not_other_color;
+
+            current_pieces = shift_bitboard(current_pieces, &piece_shift);
         }
     }
+
     return attacked_bitbaord;
 }

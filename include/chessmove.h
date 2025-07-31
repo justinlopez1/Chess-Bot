@@ -50,9 +50,6 @@ static inline bool is_legal(chessboard* board, chessmove move, bool white_to_mov
     undo_chessmove undo_info = make_move(board, move);
     bool ret = in_check(board, white_to_move);
     unmake_move(board, undo_info);
-    if (queens != board->queens || white != board->white_pieces || black != board->black_pieces) {
-        volatile int x = 50;
-    }
     return !ret;
 } 
 
