@@ -90,7 +90,8 @@ chessboard promotion = {
     .knights      = 0ULL,
     .pawns        = (1ULL << 27) | (1ULL << 48),                    // e4 (bit 28)
     .white_pieces = (1ULL << 0) | (1ULL << 5) | (1ULL << 27) | (1ULL << 48),  // king, rook, pawn
-    .black_pieces = (1ULL << 63) | (1ULL << 36)               // king, queen
+    .black_pieces = (1ULL << 63) | (1ULL << 36),               // king, queen
+    .en_pessant_index = NO_EN_PESSANT
 };
 
     movelist ml;

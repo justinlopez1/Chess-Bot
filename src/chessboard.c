@@ -6,6 +6,18 @@
 #include "chessboard.h"
 #include "movegen.h"
 
+void chessboard_init(chessboard * board, uint64_t * data) {
+    board->kings = data[0];
+    board->queens = data[0];
+    board->bishops = data[0];
+    board->knights = data[0];
+    board->rooks = data[0];
+    board->pawns = data[0];
+    board->white_pieces = data[0];
+    board->black_pieces = data[0];
+    board->en_pessant_index = NO_EN_PESSANT;
+}
+
 // the 16*8 comes from a single line being printed = 16 charaacters,
 // 1 1 1 1 1 1 1 1\n = 16 characters including spaces and newline
 // and we need 8 lines printed

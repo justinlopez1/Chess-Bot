@@ -14,11 +14,11 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         move_info.white_to_move = white_to_move;
 
         // calculate single pushes
-        uint64_t single_push = SHIFT_N(w_pawns) & ~all_pieces; 
+        uint64_t single_push = shift_bitboard(w_pawns, &SHIFT_N) & ~all_pieces; 
         if (single_push) {
             // add promoting moves
             move_info.bitboard = single_push & RANK_8;
-            move_info.delta = SHIFT_N_DELTA;
+            move_info.delta = SHIFT_N.delta;
             add_promotion_moves(board, moves, &move_info);
             // then take out the regular ones to the top row
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
@@ -30,19 +30,19 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         // pawns that after the first push are on rank 3 meaning 
         // they were previously in their staarting position
         uint64_t double_push = single_push & RANK_3;
-        double_push = SHIFT_N(double_push) & ~all_pieces;
+        double_push = shift_bitboard(double_push, &SHIFT_N) & ~all_pieces;
         if (double_push) {
             move_info.bitboard = double_push;
-            move_info.delta = SHIFT_N_DELTA*2;
+            move_info.delta = (int8_t)(SHIFT_N.delta*2);
             move_info.move_type = CHESSMOVE_TYPE_DOUBLEPAWN;
             add_moves(board, moves, &move_info);
         }
 
         // calculate left take
-        uint64_t left_take = SHIFT_NW(w_pawns) & board->black_pieces;
+        uint64_t left_take = shift_bitboard(w_pawns, &SHIFT_NW) & board->black_pieces;
         if (left_take) {
             move_info.bitboard = left_take & RANK_8;
-            move_info.delta = SHIFT_NW_DELTA;
+            move_info.delta = SHIFT_NW.delta;
             add_promotion_moves(board, moves, &move_info);
 
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
@@ -50,17 +50,33 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
             add_moves(board, moves, &move_info);
         }
 
+
         // calculate right take
-        uint64_t right_take = SHIFT_NE(w_pawns) & board->black_pieces;
+        uint64_t right_take = shift_bitboard(w_pawns, &SHIFT_NE) & board->black_pieces;
         if (right_take) {
             move_info.bitboard = right_take & RANK_8;
-            move_info.delta = SHIFT_NE_DELTA;
+            move_info.delta = SHIFT_NE.delta;
             add_promotion_moves(board, moves, &move_info);
 
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
             move_info.bitboard = right_take & ~RANK_8;
             add_moves(board, moves, &move_info);
         }
+
+        // calculate potential en pessants
+        if (board->en_pessant_index != NO_EN_PESSANT) {
+            // our any of our pawns next to that index? if so we can take it with en pessant
+            uint64_t en_pessantable_square = 0ULL;
+            SET_BIT(en_pessantable_square, board->en_pessant_index);
+
+            uint64_t right = shift_bitboard(right, &SHIFT_E); 
+            if (right & en_pessantable_square) {
+                // we can en pessant 
+                right &= en_pessantable_square;
+                right >>= 1; // 
+            }
+        }
+
     }
     else {
         uint64_t b_pawns = board->pawns & board->black_pieces;
@@ -69,10 +85,10 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         move_info.white_to_move = white_to_move;
 
         // calculate single pushes
-        uint64_t single_push = SHIFT_S(b_pawns) & ~all_pieces; 
+        uint64_t single_push = shift_bitboard(b_pawns, &SHIFT_S) & ~all_pieces; 
         if (single_push) {
             move_info.bitboard = single_push & RANK_1;
-            move_info.delta = SHIFT_S_DELTA;
+            move_info.delta = SHIFT_S.delta;
             add_promotion_moves(board, moves, &move_info);
 
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
@@ -82,19 +98,19 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
 
         // calculate double pushes
         uint64_t double_push = single_push & RANK_6;
-        double_push = SHIFT_S(double_push) & ~all_pieces;
+        double_push = shift_bitboard(double_push, &SHIFT_S) & ~all_pieces;
         if (double_push) {
             move_info.bitboard = double_push;
-            move_info.delta = SHIFT_S_DELTA*2;
+            move_info.delta = (int8_t)(SHIFT_S.delta*2);
             move_info.move_type = CHESSMOVE_TYPE_DOUBLEPAWN;
             add_moves(board, moves, &move_info);
         }
 
         // calculate left take
-        uint64_t left_take = SHIFT_SW(b_pawns) & board->white_pieces;
+        uint64_t left_take = shift_bitboard(b_pawns, &SHIFT_SW) & board->white_pieces;
         if (left_take) {
             move_info.bitboard = left_take & RANK_1;
-            move_info.delta = SHIFT_SW_DELTA;
+            move_info.delta = SHIFT_SW.delta;
             add_promotion_moves(board, moves, &move_info);
 
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
@@ -103,10 +119,10 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
         }
 
         // calculate right take
-        uint64_t right_take = SHIFT_SE(b_pawns) & board->white_pieces;
+        uint64_t right_take = shift_bitboard(b_pawns, &SHIFT_SE) & board->white_pieces;
         if (right_take) {
             move_info.bitboard = right_take & RANK_1;
-            move_info.delta = SHIFT_SE_DELTA;
+            move_info.delta = SHIFT_SE.delta;
             add_promotion_moves(board, moves, &move_info);
 
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
@@ -244,22 +260,22 @@ uint64_t get_pawn_attacked_bitboard(const chessboard * board, bool white_to_move
         uint64_t w_pawns = board->pawns & board->white_pieces;
 
         // calculate left take
-        uint64_t left_take = SHIFT_NW(w_pawns);
+        uint64_t left_take = shift_bitboard(w_pawns, &SHIFT_NW);
         if (left_take) { attacked_bitboard |= left_take; }
 
         // calculate right take
-        uint64_t right_take = SHIFT_NE(w_pawns);
-        if (right_take) { attacked_bitboard |= left_take; }
+        uint64_t right_take = shift_bitboard(w_pawns, &SHIFT_NE);
+        if (right_take) { attacked_bitboard |= right_take; }
     }
     else {
         uint64_t b_pawns = board->pawns & board->black_pieces;
 
         // calculate left take
-        uint64_t left_take = SHIFT_SW(b_pawns);
+        uint64_t left_take = shift_bitboard(b_pawns, &SHIFT_SW);
         if (left_take) { attacked_bitboard |= left_take; }
 
         // calculate right take
-        uint64_t right_take = SHIFT_SE(b_pawns);
+        uint64_t right_take = shift_bitboard(b_pawns, &SHIFT_SE);
         if (right_take) { attacked_bitboard |= right_take; }
     }   
     return attacked_bitboard;;

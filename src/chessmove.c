@@ -71,6 +71,10 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     CLEAR_BIT(*same_color_ptr, move.from);
     SET_BIT(*same_color_ptr, move.to);
 
+    // if move is double pawn, save its index to remember it can be en pessanted
+    if (move.type == CHESSMOVE_TYPE_DOUBLEPAWN) { board->en_pessant_index = (int8_t)move.to; }
+    else { board->en_pessant_index = NO_EN_PESSANT; }
+
     return undo_info;
 }
 

@@ -80,6 +80,13 @@ static const shift BISHOP_SINGLE_SHIFTS[4] = {
 };
 static const uint8_t TOTAL_BISHOP_SHIFTS = 4;
 
-
+static const shift SHIFT_N = { 8, ~(0) }; // n
+static const shift SHIFT_NE = { 9, ~(FILE_A) }; // ne
+static const shift SHIFT_E = { 1, ~(FILE_A) };// e
+static const shift SHIFT_SE = { -7, ~(FILE_A) }; // se
+static const shift SHIFT_S = { -8, ~(0) }; // s
+static const shift SHIFT_SW = { -9, ~(FILE_H) }; // sw
+static const shift SHIFT_W = { -1, ~(FILE_H) }; // w
+static const shift SHIFT_NW = { 7, ~(FILE_H) }; // nw
 
 #endif /* MOVEGEN_H */

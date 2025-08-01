@@ -19,7 +19,15 @@ typedef struct {
 
     uint64_t white_pieces;
     uint64_t black_pieces;
+
+    // holds index of square that is able to be en pessanted, if able
+    #define NO_EN_PESSANT (-1)
+    int8_t en_pessant_index;
+
 } chessboard;
+
+// initialize a chessboard, data is a pointer to an array with 8 uint64_t elements to init the board
+void chessboard_init(chessboard* board, uint64_t* data);
 
 // prints a single bitboard to the terminal
 void bitboard_print(uint64_t bitboard, const char* title);
