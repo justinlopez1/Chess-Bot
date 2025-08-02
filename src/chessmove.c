@@ -12,7 +12,8 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     undo_chessmove undo_info;
     undo_info.move_to_undo = move;
     undo_info.piece_taken = CHESSPIECE_EMPTY;
-
+    undo_info.last_en_pessant_index = board->en_pessant_index;
+    board->en_pessant_index = NO_EN_PESSANT;
 
     // determine piece
     uint64_t* pieces_moved = NULL;
@@ -21,7 +22,8 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     else if (GET_BIT(board->rooks, move.from)) { pieces_moved = &(board->rooks); }
     else if (GET_BIT(board->knights, move.from)) { pieces_moved = &(board->knights); }
     else if (GET_BIT(board->queens, move.from)) { pieces_moved = &(board->queens); }
-    else { pieces_moved = &(board->kings); }
+    else if (GET_BIT(board->kings, move.from)) { pieces_moved = &(board->kings); }
+    else { exit(1); }
 
     // determine color
     bool white_to_move = 0;
@@ -48,6 +50,11 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
             CLEAR_BIT(*pieces_moved, move.from);
             SET_BIT(*pieces_moved, move.to);
             break;
+        case CHESSMOVE_TYPE_DOUBLEPAWN :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(*pieces_moved, move.to);
+            board->en_pessant_index = (int8_t)move.to; // if en pessant move we need to remember the index that can be taken by en pessant
+            break;
         case CHESSMOVE_TYPE_B_PROMOTION :
             CLEAR_BIT(*pieces_moved, move.from);
             SET_BIT(board->bishops, move.to);
@@ -64,21 +71,32 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
             CLEAR_BIT(*pieces_moved, move.from);
             SET_BIT(board->rooks, move.to);
             break;
+        case CHESSMOVE_TYPE_ENPESSANT :
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(*pieces_moved, move.to);
+            // also remove the piece being taken
+            CLEAR_BIT(*pieces_moved, undo_info.last_en_pessant_index);
+            CLEAR_BIT(*other_color_ptr, undo_info.last_en_pessant_index);
+
+            break;
         default :
             exit(1);
     }
 
+    // reset this since we can only en pessant one move after the double push
+
     CLEAR_BIT(*same_color_ptr, move.from);
     SET_BIT(*same_color_ptr, move.to);
 
-    // if move is double pawn, save its index to remember it can be en pessanted
-    if (move.type == CHESSMOVE_TYPE_DOUBLEPAWN) { board->en_pessant_index = (int8_t)move.to; }
-    else { board->en_pessant_index = NO_EN_PESSANT; }
 
     return undo_info;
 }
 
 void unmake_move(chessboard* board, undo_chessmove undo_info) {
+
+    // remember old en pessant index
+    board->en_pessant_index = undo_info.last_en_pessant_index;
+
     // determine piece
     uint64_t* pieces_moved = NULL;
     if (GET_BIT(board->pawns, undo_info.move_to_undo.to)) { pieces_moved = &(board->pawns); }
@@ -99,7 +117,7 @@ void unmake_move(chessboard* board, undo_chessmove undo_info) {
     else { other_color_ptr = &board->white_pieces; same_color_ptr = &board->black_pieces; }
 
     // undo the move
-    if (undo_info.move_to_undo.type == CHESSMOVE_TYPE_NORMAL) {
+    if (undo_info.move_to_undo.type == CHESSMOVE_TYPE_NORMAL || undo_info.move_to_undo.type == CHESSMOVE_TYPE_DOUBLEPAWN) {
         CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
         SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
     }
@@ -111,6 +129,13 @@ void unmake_move(chessboard* board, undo_chessmove undo_info) {
         undo_info.move_to_undo.type == CHESSMOVE_TYPE_N_PROMOTION ) {
         CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
         SET_BIT(board->pawns, undo_info.move_to_undo.from);
+    }
+    else if (undo_info.move_to_undo.type == CHESSMOVE_TYPE_ENPESSANT) {
+        CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
+        SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
+
+        SET_BIT(board->pawns, undo_info.last_en_pessant_index);
+        SET_BIT(*other_color_ptr, undo_info.last_en_pessant_index);
     }
     else {
         exit(1);

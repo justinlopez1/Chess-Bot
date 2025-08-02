@@ -15,10 +15,10 @@ int main() {
         .knights      = 0ULL,
         .rooks        = 0ULL,
         // pawns on c4, e4 (white) and b5, d5, f5 (black)
-        .pawns        = (1ULL<<26)|(1ULL<<28)   // white c4,e4
-                      | (1ULL<<33)|(1ULL<<35)|(1ULL<<37), // black b5,d5,f5
-        .white_pieces = (1ULL<<26)|(1ULL<<28),
-        .black_pieces = (1ULL<<33)|(1ULL<<35)|(1ULL<<37)
+        .pawns        = (1ULL<<24)|(1ULL<<9),
+        .white_pieces = (1ULL<<9),
+        .black_pieces = (1ULL<<24),
+        .en_pessant_index = NO_EN_PESSANT
     };
 
     chessboard knight_board = {
@@ -100,18 +100,21 @@ chessboard promotion = {
     // add_knight_moves(&knight_board, &ml, false);
     // add_slider_moves(&rook_board, &ml, false, SLIDER_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
 
-    chessmove move;
-    move.from = 8;
-    move.to = 16;
-    move.type = CHESSMOVE_TYPE_NORMAL;
-
     // undo_chessmove u =  make_move(&board, move);
     // unmake_move(&board, u);
-    chessboard_print(&promotion);
+
+    chessmove move;
+    move.from = 9;
+    move.to = 25;
+    move.type = CHESSMOVE_TYPE_DOUBLEPAWN;
+    make_move(&pawn_board, move);
+
+    chessboard_print(&pawn_board);
     
-    add_legal_moves(&promotion, &ml, true);
+    add_legal_moves(&pawn_board, &ml, false);
+
+    chessboard_print(&pawn_board);
    
-    chessboard_print(&promotion);
     movelist_print(&ml);
 
     /*

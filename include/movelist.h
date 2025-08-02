@@ -122,6 +122,12 @@ static inline void movelist_print(const movelist* moves) {
             case CHESSMOVE_TYPE_N_PROMOTION :
                 str[idx++] = 'N';
                 break;
+            case CHESSMOVE_TYPE_DOUBLEPAWN :
+                str[idx++] = 'D';
+                break;
+            case CHESSMOVE_TYPE_ENPESSANT :
+                str[idx++] = 'E';
+                break;
         }
 
         str[idx++] = '\n';

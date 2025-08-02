@@ -21,6 +21,7 @@ typedef struct {
 typedef struct {
     chessmove move_to_undo; // the move that was previously made, so to undo it you would perform this move backwards
     chesspiece piece_taken; // indicates the piece that was taken, if applicable
+    int8_t last_en_pessant_index;
 } undo_chessmove;
 
 enum {

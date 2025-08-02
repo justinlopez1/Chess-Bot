@@ -69,11 +69,25 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
             uint64_t en_pessantable_square = 0ULL;
             SET_BIT(en_pessantable_square, board->en_pessant_index);
 
-            uint64_t right = shift_bitboard(right, &SHIFT_E); 
+            uint64_t right = shift_bitboard(w_pawns, &SHIFT_E); 
+            uint64_t left = shift_bitboard(w_pawns, &SHIFT_W);
             if (right & en_pessantable_square) {
-                // we can en pessant 
+                // we can take with en pessant
                 right &= en_pessantable_square;
-                right >>= 1; // 
+                // calculate normal right take shifts
+                uint64_t right_take = shift_bitboard(right, &SHIFT_N);
+                move_info.move_type = CHESSMOVE_TYPE_ENPESSANT;
+                move_info.bitboard = right_take;
+                move_info.delta = SHIFT_NE.delta;
+                add_moves(board, moves, &move_info);
+            }
+            else if (left & en_pessantable_square) {
+                left &= en_pessantable_square;
+                uint64_t left_take = shift_bitboard(left, &SHIFT_N);
+                move_info.move_type = CHESSMOVE_TYPE_ENPESSANT;
+                move_info.bitboard = left_take;
+                move_info.delta = SHIFT_NW.delta;
+                add_moves(board, moves, &move_info);
             }
         }
 
@@ -128,6 +142,34 @@ void add_pawn_moves(chessboard* board, movelist* moves, const bool white_to_move
             move_info.move_type = CHESSMOVE_TYPE_NORMAL;
             move_info.bitboard = right_take & ~RANK_1;
             add_moves(board, moves, &move_info);
+        }
+
+        // calculate potential en pessants
+        if (board->en_pessant_index != NO_EN_PESSANT) {
+            // our any of our pawns next to that index? if so we can take it with en pessant
+            uint64_t en_pessantable_square = 0ULL;
+            SET_BIT(en_pessantable_square, board->en_pessant_index);
+
+            uint64_t right = shift_bitboard(b_pawns, &SHIFT_E); 
+            uint64_t left = shift_bitboard(b_pawns, &SHIFT_W);
+            if (right & en_pessantable_square) {
+                // we can take with en pessant
+                right &= en_pessantable_square;
+                // calculate normal right take shifts
+                uint64_t right_take = shift_bitboard(right, &SHIFT_S);
+                move_info.move_type = CHESSMOVE_TYPE_ENPESSANT;
+                move_info.bitboard = right_take;
+                move_info.delta = SHIFT_SE.delta;
+                add_moves(board, moves, &move_info);
+            }
+            else if (left & en_pessantable_square) {
+                left &= en_pessantable_square;
+                uint64_t left_take = shift_bitboard(left, &SHIFT_S);
+                move_info.move_type = CHESSMOVE_TYPE_ENPESSANT;
+                move_info.bitboard = left_take;
+                move_info.delta = SHIFT_SW.delta;
+                add_moves(board, moves, &move_info);
+            }
         }
     }   
 }
