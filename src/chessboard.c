@@ -8,13 +8,14 @@
 
 void chessboard_init(chessboard * board, uint64_t * data) {
     board->kings = data[0];
-    board->queens = data[0];
-    board->bishops = data[0];
-    board->knights = data[0];
-    board->rooks = data[0];
-    board->pawns = data[0];
-    board->white_pieces = data[0];
-    board->black_pieces = data[0];
+    board->queens = data[1];
+    board->bishops = data[2];
+    board->knights = data[3];
+    board->rooks = data[4];
+    board->pawns = data[5];
+    board->white_pieces = data[6];
+    board->black_pieces = data[7];
+    board->unmoved_pieces_castle = board->kings | board->rooks;
     board->en_pessant_index = NO_EN_PESSANT;
 }
 
@@ -105,6 +106,23 @@ void chessboard_print(const chessboard* board) {
 
 
 bool in_check(const chessboard* board, bool white_to_move) {
+    // first get position (bitboard) of king
+    uint64_t our_king = board->kings;
+    if (white_to_move) { our_king &= board->white_pieces; }
+    else { our_king &= board->black_pieces; }
+
+    // generate attacking moves and check if our king is on any of the attacking squares
+    if (our_king & get_pawn_attacked_bitboard(board, !white_to_move)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS)) { return true; }
+    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS)) { return true; }
+    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS)) { return true; }
+    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
+
+    return false; 
+}
+
+bool is_square_attacked(uint8_t index, const chessboard *board, bool white_attacking) {
     // first get position (bitboard) of king
     uint64_t our_king = board->kings;
     if (white_to_move) { our_king &= board->white_pieces; }

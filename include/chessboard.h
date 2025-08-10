@@ -24,6 +24,8 @@ typedef struct {
     #define NO_EN_PESSANT (-1)
     int8_t en_pessant_index;
 
+    uint64_t unmoved_pieces_castle;
+
 } chessboard;
 
 // initialize a chessboard, data is a pointer to an array with 8 uint64_t elements to init the board
@@ -38,6 +40,8 @@ void chessboard_print(const chessboard* board);
 
 // returns true if board is in check
 bool in_check(const chessboard* board, bool white_to_move);
+
+bool is_square_attacked(uint8_t index, const chessboard* board, bool white_attacking);
 
 // returns chesspiece enum
 // bottom left square is index 0

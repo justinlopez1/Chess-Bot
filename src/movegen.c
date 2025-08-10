@@ -291,10 +291,71 @@ void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_mo
 }
 
 void add_castle_moves(chessboard * board, movelist * moves, bool white_to_move) {
+    uint64_t pieces = board->unmoved_pieces_castle;
+    if (white_to_move) {
+        pieces &= board->white_pieces;
+    }
+    else {
+        pieces &= board->black_pieces;
+    }
+
+    if (!pieces) { return; }
+
     // check if king is in position to be castled
+    if (!(pieces & board->kings)) { return; }
+    if (in_check(board, white_to_move)) { return; }
+
+    uint64_t all_pieces = board->white_pieces | board->black_pieces;
+
     // check if rook is in position to be castled
     // check that no pieces are in between
     // check that king is not in check ever when moving across
+    // left
+    if (pieces & FILE_A) {
+        uint8_t rook_idx = ctz(pieces & FILE_A);
+        uint64_t king_idx = ctz(pieces & FILE_E);
+
+        undo_chessmove undo_arr[2];
+        uint8_t undo_arr_size = 0;
+        bool castle_failed = false;
+        // check each of these squares to make sure no piece is there, then check them to make sure resulting board is not in check if king was there
+        for (int i = king_idx-1; i >= king_idx-2; i--) {
+            // make sure no piece at square
+            if (GET_BIT(all_pieces, i)) {
+                castle_failed = true;
+                break;
+            }
+
+            chessmove move;
+            move.from = i+1;
+            move.to = i;
+            move.type = CHESSMOVE_TYPE_NORMAL;
+            undo_arr[undo_arr_size++] = make_move(board, move);
+            if (in_check(board, !white_to_move)) {
+                castle_failed = true;
+                break;
+            }
+        }
+        // go through undo list and undo the moves
+        for (int8_t i = undo_arr_size-1; i >= 0; i--) {
+            unmake_move(board, undo_arr[i]);
+        }
+        // also make sure that one square has no piece on it
+        if (!GET_BIT(all_pieces, rook_idx+1) && !castle_failed) {
+            // add the castle move
+            chessmove move;
+            move.from = king_idx;
+            move.to = king_idx-2;
+            move.type = CHESSMOVE_TYPE_CASTLE;
+            
+            moves->moves[moves->curr_size++] = move;
+        }
+    }
+
+    // right
+    if (pieces & FILE_H) {
+
+    }
 }
 
 void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
@@ -306,6 +367,8 @@ void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS);
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS);
     add_slider_moves(board, moves, white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS);
+
+    add_castle_moves(board, moves, white_to_move);
 }
 
 uint64_t get_pawn_attacked_bitboard(const chessboard * board, bool white_to_move) {

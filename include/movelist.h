@@ -31,11 +31,13 @@ typedef struct {
     uint8_t curr_size;
 } movelist;
 
+// initialize the movelist as empty
 static inline void movelist_init(movelist* moves) {
     moves->curr_size = 0;
     memset(moves->moves, 0, MOVELIST_MAX_SIZE); 
 }
 
+// count trailing zeros
 static inline uint8_t ctz(uint64_t num) {
     return __builtin_ctzll(num);
 }
