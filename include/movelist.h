@@ -130,6 +130,14 @@ static inline void movelist_print(const movelist* moves) {
             case CHESSMOVE_TYPE_ENPESSANT :
                 str[idx++] = 'E';
                 break;
+            case CHESSMOVE_TYPE_CASTLE_QUEENSIDE :
+                str[idx++] = 'C';
+                break;
+            case CHESSMOVE_TYPE_CASTLE_KINGSIDE:
+                str[idx++] = 'c';
+                break;
+            default :
+                break;
         }
 
         str[idx++] = '\n';

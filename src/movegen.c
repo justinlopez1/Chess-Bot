@@ -305,11 +305,9 @@ void add_castle_moves(chessboard * board, movelist * moves, bool white_to_move) 
     if (!(pieces & board->kings)) { return; }
     if (in_check(board, white_to_move)) { return; }
 
-    uint64_t all_pieces = board->white_pieces | board->black_pieces;
-
     // left 
     if (pieces & FILE_A) {
-        add_queenside_castle(board, moves, pieces);
+        add_queenside_castle(board, moves, pieces, white_to_move);
     }
 
     // right
@@ -318,36 +316,26 @@ void add_castle_moves(chessboard * board, movelist * moves, bool white_to_move) 
     }
 }
 
-void add_queenside_castle(chessboard * board, movelist * moves, uint64_t pieces) {
-    uint64_t all_pieces = board->white_pieces & board->black_pieces;
+void add_queenside_castle(chessboard * board, movelist * moves, uint64_t pieces, bool white_to_move) {
+    uint64_t all_pieces = board->white_pieces | board->black_pieces;
     uint8_t rook_idx = ctz(pieces & FILE_A);
-    uint64_t king_idx = ctz(pieces & FILE_E);
-    bool castle_failed = false;
+    uint8_t king_idx = ctz(pieces & FILE_E);
 
-    // check each of these squares to make sure no piece is there, then check them to make sure resulting board is not in check if king was there
-    for (int i = king_idx-1; i >= king_idx-2; i--) {
+    // check each of these squares to make sure no piece is there
+    for (uint8_t i = king_idx-1; i > rook_idx; i--) {
         // make sure no piece at square
-        if (GET_BIT(all_pieces, i)) {
-            castle_failed = true;
-            break;
-        }
+        if (GET_BIT(all_pieces, i)) { return; }
     }
 
-    chessmove move;
-    move.from = i+1;
-    move.to = i;
-    move.type = CHESSMOVE_TYPE_NORMAL;
-    
-    // also make sure that one square has no piece on it
-    if (!GET_BIT(all_pieces, rook_idx+1) && !castle_failed) {
-        // add the castle move
-        chessmove move;
-        move.from = king_idx;
-        move.to = king_idx-2;
-        move.type = CHESSMOVE_TYPE_CASTLE;
-        
-        moves->moves[moves->curr_size++] = move;
+    // now check squres to make sure they aren't attacked
+    for (uint8_t i = king_idx-1; i >= king_idx-2; i--) {
+        if (is_square_attacked(i, board, !white_to_move)) { return; }
     }
+
+    chessmove* move_ptr = &(moves->moves[moves->curr_size++]);
+    move_ptr->from = king_idx;
+    move_ptr->to = king_idx-2;
+    move_ptr->type = CHESSMOVE_TYPE_CASTLE_QUEENSIDE;
 }
 
 void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {

@@ -25,4 +25,13 @@ static const uint64_t FILE_F = 0x2020202020202020ULL;
 static const uint64_t FILE_G = 0x4040404040404040ULL;
 static const uint64_t FILE_H = 0x8080808080808080ULL;
 
+// Rook positions
+static const uint8_t WHITE_QUENSIDE_ROOK_START_POS = 0;
+static const uint8_t WHITE_KINGSIDE_ROOK__START_POS  = 7;
+static const uint8_t BLACK_QUEENSIDE_ROOK_START_POS = 56;
+static const uint8_t BLACK_KINGSIDE_ROOK_START_POS  = 63;
+
+// King positions
+static const uint8_t WHITE_KING_START_POS = 4;
+static const uint8_t BLACK_KING_START_POS = 60;
 #endif /* MACROS_H */

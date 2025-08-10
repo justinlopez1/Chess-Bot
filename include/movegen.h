@@ -30,7 +30,7 @@ void add_slider_moves(chessboard* board, movelist* moves, bool white_to_move, ch
 
 void add_castle_moves(chessboard* board, movelist* moves, bool white_to_move);
 // pieces are the correct color's rooks and king
-void add_queenside_castle(chessboard* board, movelist* moves, uint64_t pieces);
+void add_queenside_castle(chessboard* board, movelist* moves, uint64_t pieces, bool white_to_move);
 
 // calls all the above functions to add all legal moves to a movelist
 void add_legal_moves(chessboard* board, movelist* moves, bool white_to_move);

@@ -5,6 +5,7 @@
 #include "chesspiece.h"
 #include "chessboard.h"
 #include "macros.h"
+#include "movelist.h"
 #include "chessmove.h"
 
 
@@ -77,7 +78,24 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
             // also remove the piece being taken
             CLEAR_BIT(*pieces_moved, undo_info.last_en_pessant_index);
             CLEAR_BIT(*other_color_ptr, undo_info.last_en_pessant_index);
-
+            break;
+        case CHESSMOVE_TYPE_CASTLE_QUEENSIDE :
+            // move king
+            CLEAR_BIT(*pieces_moved, move.from);
+            SET_BIT(*pieces_moved, move.to);
+            // move rook
+            if (*pieces_moved & RANK_1) {
+                CLEAR_BIT(board->rooks, WHITE_QUENSIDE_ROOK_START_POS);
+                SET_BIT(board->rooks, move.to+1);
+                CLEAR_BIT(board->white_pieces, WHITE_QUENSIDE_ROOK_START_POS);
+                SET_BIT(board->white_pieces, move.to+1);
+            }
+            else {
+                CLEAR_BIT(board->rooks, BLACK_QUEENSIDE_ROOK_START_POS);
+                SET_BIT(board->rooks, move.to+1);
+                CLEAR_BIT(board->black_pieces, BLACK_QUEENSIDE_ROOK_START_POS);
+                SET_BIT(board->black_pieces, move.to+1);
+            }
             break;
         default :
             exit(1);
@@ -136,6 +154,24 @@ void unmake_move(chessboard* board, undo_chessmove undo_info) {
 
         SET_BIT(board->pawns, undo_info.last_en_pessant_index);
         SET_BIT(*other_color_ptr, undo_info.last_en_pessant_index);
+    }
+    else if (undo_info.move_to_undo.type == CHESSMOVE_TYPE_CASTLE_QUEENSIDE) {
+        // replace king
+        CLEAR_BIT(*pieces_moved, undo_info.move_to_undo.to);
+        SET_BIT(*pieces_moved, undo_info.move_to_undo.from);
+        // replace rook
+        if (*pieces_moved & RANK_1) {
+            SET_BIT(board->rooks, WHITE_QUENSIDE_ROOK_START_POS);
+            CLEAR_BIT(board->rooks, undo_info.move_to_undo.to+1);
+            SET_BIT(board->white_pieces, WHITE_QUENSIDE_ROOK_START_POS);
+            CLEAR_BIT(board->white_pieces, undo_info.move_to_undo.to+1);
+        }
+        else {
+            SET_BIT(board->rooks, BLACK_QUEENSIDE_ROOK_START_POS);
+            CLEAR_BIT(board->rooks, undo_info.move_to_undo.to+1);
+            SET_BIT(board->black_pieces, BLACK_QUEENSIDE_ROOK_START_POS);
+            CLEAR_BIT(board->black_pieces, undo_info.move_to_undo.to+1);
+        }
     }
     else {
         exit(1);

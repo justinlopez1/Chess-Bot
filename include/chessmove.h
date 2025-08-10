@@ -8,6 +8,7 @@
 #include "chesspiece.h"
 #include "chessboard.h"
 #include "macros.h"
+#include "movelist.h"
 
 // struct represents a chess move
 // from and to are index's in the biboard
@@ -30,7 +31,8 @@ enum {
     CHESSMOVE_TYPE_R_PROMOTION,
     CHESSMOVE_TYPE_B_PROMOTION,
     CHESSMOVE_TYPE_N_PROMOTION,
-    CHESSMOVE_TYPE_CASTLE,
+    CHESSMOVE_TYPE_CASTLE_QUEENSIDE,
+    CHESSMOVE_TYPE_CASTLE_KINGSIDE,
     CHESSMOVE_TYPE_DOUBLEPAWN,
     CHESSMOVE_TYPE_ENPESSANT,
     CHESSMOVE_TYPE_FIRST_ROOK_KING_MOVE,
@@ -46,9 +48,6 @@ void unmake_move(chessboard* board, undo_chessmove undo_info);
 // a move is illegal if it tries to move a pinned piece, so this is all this function checks for
 // the provided move should be a valid psuedo move
 static inline bool is_legal(chessboard* board, chessmove move, bool white_to_move) {
-    uint64_t queens = board->queens;
-    uint64_t white = board->white_pieces;
-    uint64_t black = board->black_pieces;
     undo_chessmove undo_info = make_move(board, move);
     bool ret = in_check(board, white_to_move);
     unmake_move(board, undo_info);

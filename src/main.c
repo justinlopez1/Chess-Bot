@@ -7,6 +7,10 @@
 
 int main() {
 
+    uint64_t unmoved_start = 0;
+    unmoved_start |= WHITE_KING_START_POS | BLACK_KING_START_POS | BLACK_QUEENSIDE_ROOK_START_POS |
+                        WHITE_QUENSIDE_ROOK_START_POS | BLACK_KINGSIDE_ROOK_START_POS | WHITE_KINGSIDE_ROOK__START_POS;
+
     chessboard pawn_board = {
         // no other pieces
         .kings        = 0ULL,
@@ -94,6 +98,22 @@ chessboard promotion = {
     .en_pessant_index = NO_EN_PESSANT
 };
 
+chessboard castle_qs_white_ok = {
+        .kings        = (1ULL << 4)  | (1ULL << 63),  // e1 (white), h8 (black)
+        .queens       = 0ULL,
+        .bishops      = 0ULL,
+        .knights      = 0ULL,
+        .rooks        = (1ULL << 0),                  // a1 rook
+        .pawns        = 0ULL,
+
+        .white_pieces = (1ULL << 4) | (1ULL << 0),    // e1, a1
+        .black_pieces = (1ULL << 63),                 // h8
+
+        // make sure your struct has this field; it must include unmoved K and R
+        .unmoved_pieces_castle = ( 1<< WHITE_KING_START_POS) | (1<<WHITE_QUENSIDE_ROOK_START_POS),
+        .en_pessant_index = NO_EN_PESSANT
+    };
+
     movelist ml;
     movelist_init(&ml);
     // add_pawn_moves(&board, &ml, false); 
@@ -104,18 +124,24 @@ chessboard promotion = {
     // unmake_move(&board, u);
 
     chessmove move;
-    move.from = 9;
-    move.to = 25;
-    move.type = CHESSMOVE_TYPE_DOUBLEPAWN;
-    make_move(&pawn_board, move);
+    move.from = 4;
+    move.to = 2;
+    move.type = CHESSMOVE_TYPE_CASTLE_QUEENSIDE;
+    // make_move(&pawn_board, move);
 
-    chessboard_print(&pawn_board);
+
+
+    chessboard_print(&castle_qs_white_ok);
     
-    add_legal_moves(&pawn_board, &ml, false);
+    add_legal_moves(&castle_qs_white_ok, &ml, true);
 
-    chessboard_print(&pawn_board);
+    chessboard_print(&castle_qs_white_ok);
    
     movelist_print(&ml);
+
+    make_move(&castle_qs_white_ok, move);
+
+    chessboard_print(&castle_qs_white_ok);
 
     /*
     add_legal_moves(&knight_board, &ml, false);
