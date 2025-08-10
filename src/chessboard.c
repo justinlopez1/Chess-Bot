@@ -124,17 +124,16 @@ bool in_check(const chessboard* board, bool white_to_move) {
 
 bool is_square_attacked(uint8_t index, const chessboard *board, bool white_attacking) {
     // first get position (bitboard) of king
-    uint64_t our_king = board->kings;
-    if (white_to_move) { our_king &= board->white_pieces; }
-    else { our_king &= board->black_pieces; }
+    uint64_t pieces = 0;
+    SET_BIT(pieces, index);
 
     // generate attacking moves and check if our king is on any of the attacking squares
-    if (our_king & get_pawn_attacked_bitboard(board, !white_to_move)) { return true; }
-    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
-    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS)) { return true; }
-    if (our_king & get_slider_attacked_bitboard(board, !white_to_move, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS)) { return true; }
-    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS)) { return true; }
-    if (our_king & get_nonslider_attacked_bitboard(board, !white_to_move, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
+    if (pieces & get_pawn_attacked_bitboard(board, white_attacking)) { return true; }
+    if (pieces & get_slider_attacked_bitboard(board, white_attacking, CHESSPIECE_QUEEN, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
+    if (pieces & get_slider_attacked_bitboard(board, white_attacking, CHESSPIECE_BISHOP, BISHOP_SINGLE_SHIFTS, TOTAL_BISHOP_SHIFTS)) { return true; }
+    if (pieces & get_slider_attacked_bitboard(board, white_attacking, CHESSPIECE_ROOK, ROOK_SINGLE_SHIFTS, TOTAL_ROOK_SHIFTS)) { return true; }
+    if (pieces & get_nonslider_attacked_bitboard(board, white_attacking, CHESSPIECE_KNIGHT, KNIGHT_SHIFTSET, TOTAL_KNIGHT_SHIFTS)) { return true; }
+    if (pieces & get_nonslider_attacked_bitboard(board, white_attacking, CHESSPIECE_KING, KING_QUEEN_SHIFTSET, TOTAL_KING_QUEEN_SHIFTS)) { return true; }
 
     return false; 
 }
