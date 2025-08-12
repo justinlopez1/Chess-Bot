@@ -24,14 +24,14 @@ typedef struct {
     chesspiece piece_taken; // indicates the piece that was taken, if applicable
                             //
     #ifndef NO_EN_PESSANT
-    #define NO_EN_PESSANT (-1)
+    #define NO_EN_PESSANT UINT8_MAX 
     #endif
-    int8_t last_en_pessant_index; // holds the last en pessant index variable in the previous board state
+    uint8_t last_en_pessant_index; // holds the last en pessant index variable in the previous board state
 
     #ifndef NO_CASTLE_UPDATED_INDEX
-    #define NO_CASTLE_UPDATED_INDEX (-1)
+    #define NO_CASTLE_UPDATED_INDEX UINT8_MAX 
     #endif
-    int8_t unmoved_pieces_castle_updated_index; // holds the last update of the removed index from the unmoved pieces caslte bitboard in board
+    uint8_t unmoved_pieces_castle_updated_index; // holds the last update of the removed index from the unmoved pieces caslte bitboard in board
 } undo_chessmove;
 
 enum {

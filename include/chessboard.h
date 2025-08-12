@@ -22,9 +22,9 @@ typedef struct {
 
     // holds index of square that is able to be en pessanted, if able
     #ifndef NO_EN_PESSANT
-    #define NO_EN_PESSANT (-1)
+    #define NO_EN_PESSANT UINT8_MAX
     #endif
-    int8_t en_pessant_index;
+    uint8_t en_pessant_index;
 
     uint64_t unmoved_pieces_castle;
 

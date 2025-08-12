@@ -107,7 +107,12 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     // we also need to store that in the undo move's bool
     uint64_t from_to_bb = (1ULL << move.from) || (1ULL << move.to);
     if (board->unmoved_pieces_castle & from_to_bb) {
-        // if collides with from, 
+        // if collides with from, its being moved
+        // if collides with to, its being taken
+        // either way the behaviour would be the same, in that the same index in the boards bitboard would be updated
+        uint8_t idx = ctz(board->unmoved_pieces_castle & from_to_bb);
+        undo_info.unmoved_pieces_castle_updated_index = idx;
+        CLEAR_BIT(board->unmoved_pieces_castle, idx); 
     }
 
 
@@ -189,5 +194,10 @@ void unmake_move(chessboard* board, undo_chessmove undo_info) {
     if (taken_pieces != NULL) {
         SET_BIT(*taken_pieces, undo_info.move_to_undo.to);
         SET_BIT(*other_color_ptr, undo_info.move_to_undo.to);
+    }
+    
+    // update old first moved castle board
+    if (undo_info.unmoved_pieces_castle_updated_index != NO_CASTLE_UPDATED_INDEX) {
+        SET_BIT(board->unmoved_pieces_castle, undo_info.unmoved_pieces_castle_updated_index);
     }
 }
