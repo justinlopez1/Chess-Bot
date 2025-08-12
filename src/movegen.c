@@ -333,6 +333,10 @@ void add_queenside_castle(chessboard * board, movelist * moves, uint64_t pieces,
     move_ptr->type = CHESSMOVE_TYPE_CASTLE_QUEENSIDE;
 }
 
+void add_kingside_castle(chessboard * board, movelist * moves, uint64_t pieces, bool white_to_move) {
+
+}
+
 void add_legal_moves(chessboard * board, movelist * moves, bool white_to_move) {
     add_pawn_moves(board, moves, white_to_move);
 

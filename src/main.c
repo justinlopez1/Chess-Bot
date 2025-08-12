@@ -104,11 +104,11 @@ chessboard castle_qs_white_ok = {
         .queens       = 0ULL,
         .bishops      = 0ULL,
         .knights      = 0ULL,
-        .rooks        = (1ULL << 0),                  // a1 rook
+        .rooks        = (1ULL << 0) | (1ULL << 61),                 // a1 rook
         .pawns        = 0ULL,
 
         .white_pieces = (1ULL << 4) | (1ULL << 0),    // e1, a1
-        .black_pieces = (1ULL << 63),                 // h8
+        .black_pieces = (1ULL << 63) | (1ULL << 61),                 // h8
 
         // make sure your struct has this field; it must include unmoved K and R
         .unmoved_pieces_castle = ( 1<< WHITE_KING_START_POS) | (1<<WHITE_QUENSIDE_ROOK_START_POS),
@@ -139,14 +139,13 @@ chessboard castle_qs_white_ok = {
     move2.to = 4;
     move2.type = CHESSMOVE_TYPE_NORMAL;
 
-    
     chessboard_print(&castle_qs_white_ok);
     add_legal_moves(&castle_qs_white_ok, &ml, true);
     movelist_print(&ml);
    
     undo_chessmove u = make_move(&castle_qs_white_ok, move1);
-    // unmake_move(&castle_qs_white_ok, u);
-    make_move(&castle_qs_white_ok, move2);
+    unmake_move(&castle_qs_white_ok, u);
+    // make_move(&castle_qs_white_ok, move2);
     chessboard_print(&castle_qs_white_ok);
     ml.curr_size = 0;
     add_legal_moves(&castle_qs_white_ok, &ml, true);
