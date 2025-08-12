@@ -129,8 +129,6 @@ chessboard castle_qs_white_ok = {
     move.type = CHESSMOVE_TYPE_CASTLE_QUEENSIDE;
     // make_move(&pawn_board, move);
 
-
-
     chessboard_print(&castle_qs_white_ok);
     
     add_legal_moves(&castle_qs_white_ok, &ml, true);
@@ -140,7 +138,6 @@ chessboard castle_qs_white_ok = {
     movelist_print(&ml);
 
     make_move(&castle_qs_white_ok, move);
-
     chessboard_print(&castle_qs_white_ok);
 
     /*

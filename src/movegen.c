@@ -218,11 +218,6 @@ void add_nonslider_moves(chessboard* board, movelist* moves, bool white_to_move,
             add_moves(board, moves, &move_info);
         }
     }
-
-    if (piece == CHESSPIECE_KING) {
-        add_castle_moves(board, moves, white_to_move);
-    }
-
 }
 
 void add_slider_moves(chessboard* board, movelist* moves, const bool white_to_move, chesspiece piece, const shift* shiftset, uint8_t total_shifts) {

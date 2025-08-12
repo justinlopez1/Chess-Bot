@@ -8,7 +8,6 @@
 #include "movelist.h"
 #include "chessmove.h"
 
-
 undo_chessmove make_move(chessboard* board, const chessmove move) {
     undo_chessmove undo_info;
     undo_info.move_to_undo = move;
