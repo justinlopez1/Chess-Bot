@@ -105,7 +105,7 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     
     // if this move was the first time a rook or king was moved, then we need to remove it from the unmoved bitboard
     // we also need to store that in the undo move's bool
-    uint64_t from_to_bb = (1ULL << move.from) || (1ULL << move.to);
+    uint64_t from_to_bb = (1ULL << move.from) | (1ULL << move.to);
     if (board->unmoved_pieces_castle & from_to_bb) {
         // if collides with from, its being moved
         // if collides with to, its being taken

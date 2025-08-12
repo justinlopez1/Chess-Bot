@@ -128,18 +128,29 @@ chessboard castle_qs_white_ok = {
     move.from = 4;
     move.to = 2;
     move.type = CHESSMOVE_TYPE_CASTLE_QUEENSIDE;
-    // make_move(&pawn_board, move);
-
-    chessboard_print(&castle_qs_white_ok);
     
+    chessmove move1;
+    move1.from = 4;
+    move1.to = 5;
+    move1.type = CHESSMOVE_TYPE_NORMAL;
+
+    chessmove move2;
+    move2.from = 5;
+    move2.to = 4;
+    move2.type = CHESSMOVE_TYPE_NORMAL;
+
+    
+    chessboard_print(&castle_qs_white_ok);
     add_legal_moves(&castle_qs_white_ok, &ml, true);
-
-    chessboard_print(&castle_qs_white_ok);
-   
     movelist_print(&ml);
-
-    make_move(&castle_qs_white_ok, move);
+   
+    undo_chessmove u = make_move(&castle_qs_white_ok, move1);
+    // unmake_move(&castle_qs_white_ok, u);
+    make_move(&castle_qs_white_ok, move2);
     chessboard_print(&castle_qs_white_ok);
+    ml.curr_size = 0;
+    add_legal_moves(&castle_qs_white_ok, &ml, true);
+    movelist_print(&ml);
 
     /*
     add_legal_moves(&knight_board, &ml, false);

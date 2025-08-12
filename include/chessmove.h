@@ -44,7 +44,6 @@ enum {
     CHESSMOVE_TYPE_CASTLE_KINGSIDE,
     CHESSMOVE_TYPE_DOUBLEPAWN,
     CHESSMOVE_TYPE_ENPESSANT,
-    CHESSMOVE_TYPE_FIRST_ROOK_KING_MOVE,
 };
 
 // performs a chessmove on a board, modifying the data that the pointer board is pointing to
