@@ -21,7 +21,9 @@ typedef struct {
     uint64_t black_pieces;
 
     // holds index of square that is able to be en pessanted, if able
+    #ifndef NO_EN_PESSANT
     #define NO_EN_PESSANT (-1)
+    #endif
     int8_t en_pessant_index;
 
     uint64_t unmoved_pieces_castle;

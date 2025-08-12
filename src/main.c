@@ -22,7 +22,8 @@ int main() {
         .pawns        = (1ULL<<24)|(1ULL<<9),
         .white_pieces = (1ULL<<9),
         .black_pieces = (1ULL<<24),
-        .en_pessant_index = NO_EN_PESSANT
+        .en_pessant_index = NO_EN_PESSANT,
+        .unmoved_pieces_castle = 0
     };
 
     chessboard knight_board = {

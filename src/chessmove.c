@@ -13,6 +13,7 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
     undo_info.move_to_undo = move;
     undo_info.piece_taken = CHESSPIECE_EMPTY;
     undo_info.last_en_pessant_index = board->en_pessant_index;
+    undo_info.unmoved_pieces_castle_updated_index = NO_CASTLE_UPDATED_INDEX;
     board->en_pessant_index = NO_EN_PESSANT;
 
     // determine piece
@@ -99,11 +100,15 @@ undo_chessmove make_move(chessboard* board, const chessmove move) {
         default :
             exit(1);
     }
-
-    // reset this since we can only en pessant one move after the double push
-
     CLEAR_BIT(*same_color_ptr, move.from);
     SET_BIT(*same_color_ptr, move.to);
+    
+    // if this move was the first time a rook or king was moved, then we need to remove it from the unmoved bitboard
+    // we also need to store that in the undo move's bool
+    uint64_t from_to_bb = (1ULL << move.from) || (1ULL << move.to);
+    if (board->unmoved_pieces_castle & from_to_bb) {
+        // if collides with from, 
+    }
 
 
     return undo_info;

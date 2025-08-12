@@ -22,7 +22,16 @@ typedef struct {
 typedef struct {
     chessmove move_to_undo; // the move that was previously made, so to undo it you would perform this move backwards
     chesspiece piece_taken; // indicates the piece that was taken, if applicable
-    int8_t last_en_pessant_index;
+                            //
+    #ifndef NO_EN_PESSANT
+    #define NO_EN_PESSANT (-1)
+    #endif
+    int8_t last_en_pessant_index; // holds the last en pessant index variable in the previous board state
+
+    #ifndef NO_CASTLE_UPDATED_INDEX
+    #define NO_CASTLE_UPDATED_INDEX (-1)
+    #endif
+    int8_t unmoved_pieces_castle_updated_index; // holds the last update of the removed index from the unmoved pieces caslte bitboard in board
 } undo_chessmove;
 
 enum {
